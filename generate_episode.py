@@ -20,7 +20,13 @@ TOKEN_PATH = ROOT / "token.json"
 WORK.mkdir(exist_ok=True)
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "").strip()
-OPENROUTER_MODEL   = os.environ.get("OPENROUTER_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free")
+OPENROUTER_MODEL   = os.environ.get("OPENROUTER_MODEL", "google/gemma-4-31b-it:free")
+FALLBACK_MODELS    = [m for m in [
+    "google/gemma-4-31b-it:free",
+    "google/gemma-4-26b-a4b-it:free",
+    "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "nvidia/nemotron-3.5-lightning:free",
+] ]
 VOICE              = os.environ.get("TTS_VOICE", "en-US-JennyNeural")
 TTS_RATE           = os.environ.get("TTS_RATE", "-5%")
 PRIVACY_STATUS     = os.environ.get("PRIVACY_STATUS", "private")  # safe default; set public when confident
@@ -61,6 +67,41 @@ def mark_done(ep_id):
 
 # ---------------------------------------------------------------- 1. script
 
+def _call_llm_once(model, row, sys_prompt, user_prompt):
+    payload = json.dumps({
+        "model": model,
+        "messages": [{"role": "system", "content": sys_prompt},
+                     {"role": "user", "content": user_prompt}],
+        "temperature": 0.9,
+        "max_tokens": 6000,
+    }).encode()
+
+    req = urllib.request.Request(
+        "https://openrouter.ai/api/v1/chat/completions",
+        data=payload, method="POST",
+        headers={
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://github.com/NO-NAME7861/youtube-automation",
+            "X-Title": "YouTube Automation",
+        })
+    with urllib.request.urlopen(req, timeout=240) as r:
+        resp = json.loads(r.read())
+
+    content = None
+    try:
+        content = resp["choices"][0]["message"]["content"]
+    except Exception:
+        raise RuntimeError("unexpected LLM payload: " + json.dumps(resp)[:1500])
+    if not content:
+        raise RuntimeError("empty content: " + json.dumps(resp)[:1500])
+
+    content = content.strip()
+    start, end = content.find("{"), content.rfind("}")
+    if start == -1 or end == -1:
+        raise RuntimeError("no JSON in reply: " + content[:1500])
+    return json.loads(content[start:end + 1])
+
 def call_llm(row):
     sys_prompt = (
         "You are a veteran YouTube scriptwriter for the 'Chinese animation recap' niche. "
@@ -82,31 +123,19 @@ Episode brief (topic + moral):
 Title seed: {row['topic']}
 Moral: {row['moral']}"""
 
-    payload = json.dumps({
-        "model": OPENROUTER_MODEL,
-        "messages": [{"role": "system", "content": sys_prompt},
-                     {"role": "user", "content": user_prompt}],
-        "temperature": 0.9,
-        "max_tokens": 6000,
-    }).encode()
-
-    req = urllib.request.Request(
-        "https://openrouter.ai/api/v1/chat/completions",
-        data=payload, method="POST",
-        headers={
-            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "https://github.com/NO-NAME7861/youtube-automation",
-            "X-Title": "YouTube Automation",
-        })
-    with urllib.request.urlopen(req, timeout=240) as r:
-        resp = json.loads(r.read())
-
-    content = resp["choices"][0]["message"]["content"].strip()
-    start, end = content.find("{"), content.rfind("}")
-    if start == -1 or end == -1:
-        sys.exit("LLM did not return JSON. Raw reply:\n" + content[:2000])
-    return json.loads(content[start:end + 1])
+    models = [OPENROUTER_MODEL] + [m for m in FALLBACK_MODELS if m != OPENROUTER_MODEL]
+    failures = []
+    for model in models:
+        for attempt in range(2):
+            try:
+                ep = _call_llm_once(model, row, sys_prompt, user_prompt)
+                log(f"LLM OK via {model} (attempt {attempt + 1})")
+                return ep
+            except Exception as e:
+                log(f"model {model} attempt {attempt + 1} failed: {e}")
+                failures.append(f"{model}: {e}")
+                time.sleep(5)
+    sys.exit("All LLM models failed:\n" + "\n\n".join(failures))
 
 # ---------------------------------------------------------------- 2. images
 
