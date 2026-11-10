@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 YouTube Automation - Daily Episode Generator
@@ -20,7 +20,7 @@ TOKEN_PATH = ROOT / "token.json"
 WORK.mkdir(exist_ok=True)
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "").strip()
-OPENROUTER_MODEL   = os.environ.get("OPENROUTER_MODEL", "deepseek/deepseek-chat:free")
+OPENROUTER_MODEL   = os.environ.get("OPENROUTER_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free")
 VOICE              = os.environ.get("TTS_VOICE", "en-US-JennyNeural")
 TTS_RATE           = os.environ.get("TTS_RATE", "-5%")
 PRIVACY_STATUS     = os.environ.get("PRIVACY_STATUS", "private")  # safe default; set public when confident
@@ -304,3 +304,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
