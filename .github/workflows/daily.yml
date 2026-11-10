@@ -13,6 +13,21 @@ on:
         default: "public"
         type: choice
         options: ["private", "public", "unlisted"]
+      episode_index:
+        description: "Force a specific episode ID (e.g. A002)"
+        required: false
+        default: ""
+        type: string
+      episodes_csv:
+        description: "Episode CSV file to use"
+        required: false
+        default: ""
+        type: string
+      style:
+        description: "Recap style: chinese or japanese"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: write
@@ -48,8 +63,9 @@ jobs:
           OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'google/gemma-4-31b-it:free' }}
           TTS_VOICE: ${{ vars.TTS_VOICE || 'en-US-JennyNeural' }}
           PRIVACY_STATUS: ${{ inputs.privacy || vars.PRIVACY_STATUS || 'public' }}
-          EPISODES_CSV: ${{ vars.EPISODES_CSV || 'season2_japanese.csv' }}
-          STYLE: ${{ vars.STYLE || 'japanese' }}
+          EPISODES_CSV: ${{ inputs.episodes_csv || vars.EPISODES_CSV || 'season2_japanese.csv' }}
+          STYLE: ${{ inputs.style || vars.STYLE || 'japanese' }}
+          EPISODE_INDEX: ${{ inputs.episode_index || '' }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           UPLOAD: "1"
@@ -60,7 +76,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add state/episodes.json
-          git diff --cached --quiet || (git commit -m "chore: advance episode state" && git push)
+          git diff --cached --quiet || (git commit -m "chore: advance episode state" && git push origin HEAD:main)
 
       - name: Upload work artifacts for debugging
         if: always()
