@@ -144,7 +144,7 @@ Moral: {row['moral']}"""
 
 def _cf_image(prompt, dest, seed):
     import base64
-    payload = json.dumps({"prompt": prompt, "seed": seed}).encode()
+    payload = json.dumps({"prompt": prompt}).encode()
     req = urllib.request.Request(
         f"https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell",
         data=payload, method="POST",
