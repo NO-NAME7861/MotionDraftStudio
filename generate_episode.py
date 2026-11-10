@@ -277,8 +277,11 @@ def youtube_upload(ep, mp4, thumbnail):
     log(f"uploaded: https://youtu.be/{vid}")
 
     if thumbnail and Path(thumbnail).exists():
-        yt.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(thumbnail))).execute()
-        log("thumbnail set")
+        try:
+            yt.thumbnails().set(videoId=vid, media_body=MediaFileUpload(str(thumbnail))).execute()
+            log("thumbnail set")
+        except Exception as e:
+            log("thumbnail set skipped (channel likely lacks custom thumbnail permission):", e)
     return vid
 
 def drive_backup(mp4):
