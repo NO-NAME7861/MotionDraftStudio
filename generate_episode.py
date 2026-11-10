@@ -186,7 +186,7 @@ def gen_image(prompt, dest, seed):
 def run_tts(text_file, mp3, srt):
     cmd = [sys.executable, "-m", "edge_tts", "--file", str(text_file),
            "--write-media", str(mp3), "--write-subtitles", str(srt),
-           "--voice", VOICE, "--rate", TTS_RATE]
+           "--voice", VOICE, f"--rate={TTS_RATE}"]
     subprocess.run(cmd, check=True)
 
 def media_duration(path):
