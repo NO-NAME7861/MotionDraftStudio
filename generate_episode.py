@@ -21,6 +21,8 @@ WORK.mkdir(exist_ok=True)
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "").strip()
 OPENROUTER_MODEL   = os.environ.get("OPENROUTER_MODEL", "google/gemma-4-31b-it:free")
+CF_ACCOUNT_ID      = os.environ.get("CF_ACCOUNT_ID", "").strip()
+CF_API_TOKEN       = os.environ.get("CF_API_TOKEN", "").strip()
 FALLBACK_MODELS    = [m for m in [
     "google/gemma-4-31b-it:free",
     "google/gemma-4-26b-a4b-it:free",
@@ -140,20 +142,42 @@ Moral: {row['moral']}"""
 
 # ---------------------------------------------------------------- 2. images
 
-def gen_image(prompt, dest, seed):
+def _cf_image(prompt, dest, seed):
+    import base64
+    payload = json.dumps({"prompt": prompt, "seed": seed}).encode()
+    req = urllib.request.Request(
+        f"https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell",
+        data=payload, method="POST",
+        headers={"Authorization": f"Bearer {CF_API_TOKEN}",
+                 "Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=120) as r:
+        resp = json.loads(r.read())
+    img_b64 = resp.get("result", {}).get("image")
+    if not img_b64:
+        raise RuntimeError("CF AI failed: " + json.dumps(resp)[:500])
+    dest.write_bytes(base64.b64decode(img_b64))
+    return True
+
+def _pollinations_image(prompt, dest, seed):
     url = ("https://image.pollinations.ai/prompt/" + urllib.parse.quote(prompt)
            + f"?width={W}&height={H}&nologo=true&seed={seed}")
-    for attempt in range(4):
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=180) as r:
+        data = r.read()
+    if len(data) <= 20_000:
+        raise RuntimeError(f"pollinations too small: {len(data)} bytes")
+    dest.write_bytes(data)
+    return True
+
+def gen_image(prompt, dest, seed):
+    for attempt in range(3):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-            with urllib.request.urlopen(req, timeout=180) as r:
-                data = r.read()
-            if len(data) > 20_000:
-                dest.write_bytes(data)
-                return True
+            if CF_ACCOUNT_ID and CF_API_TOKEN:
+                return _cf_image(prompt, dest, seed)
+            return _pollinations_image(prompt, dest, seed)
         except Exception as e:
-            log(f"image retry {attempt + 1}/4: {e}")
-            time.sleep(6)
+            log(f"image retry {attempt + 1}/3: {e}")
+            time.sleep(4)
     log("WARNING: image failed after retries:", prompt[:60])
     return False
 
