@@ -73,7 +73,8 @@ def _call_llm_once(model, row, sys_prompt, user_prompt):
         "messages": [{"role": "system", "content": sys_prompt},
                      {"role": "user", "content": user_prompt}],
         "temperature": 0.9,
-        "max_tokens": 6000,
+        "max_tokens": 7000,
+        "reasoning": {"enabled": False},
     }).encode()
 
     req = urllib.request.Request(
@@ -114,7 +115,7 @@ def call_llm(row):
  "description": "2-3 sentences hook + 1 line moral + line: This video features AI-generated visuals and AI narration. + subscribe CTA, max 1000 chars",
  "tags": ["max 15 tags"],
  "moral": "one sentence",
- "narration": "1600-2100 words continuous narration, natural spoken English, vivid, dramatic, easy for one voice to read. MUST end with the explicit moral.",
+ "narration": "1200-1600 words continuous narration, natural spoken English, vivid, dramatic, easy for one voice to read. MUST end with the explicit moral.",
  "image_prompts": ["12 SHORT prompts, each: Chinese-animation (xianxia/wuxia) style, cinematic, dramatic lighting, <scene description>"],
  "thumbnail_prompt": "one dramatic prompt for a 16:9 thumbnail"
 }}
@@ -126,7 +127,7 @@ Moral: {row['moral']}"""
     models = [OPENROUTER_MODEL] + [m for m in FALLBACK_MODELS if m != OPENROUTER_MODEL]
     failures = []
     for model in models:
-        for attempt in range(2):
+        for attempt in range(3):
             try:
                 ep = _call_llm_once(model, row, sys_prompt, user_prompt)
                 log(f"LLM OK via {model} (attempt {attempt + 1})")
@@ -134,7 +135,7 @@ Moral: {row['moral']}"""
             except Exception as e:
                 log(f"model {model} attempt {attempt + 1} failed: {e}")
                 failures.append(f"{model}: {e}")
-                time.sleep(5)
+                time.sleep(20)
     sys.exit("All LLM models failed:\n" + "\n\n".join(failures))
 
 # ---------------------------------------------------------------- 2. images
