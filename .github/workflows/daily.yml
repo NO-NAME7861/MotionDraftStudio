@@ -1,0 +1,69 @@
+name: Daily Episode Upload
+
+on:
+  schedule:
+    # 18:00 UTC = 11:00 PM Pakistan Standard Time, every day
+    - cron: "0 18 * * *"
+  workflow_dispatch:
+    inputs:
+      privacy:
+        description: "Upload privacy"
+        required: true
+        default: "private"
+        type: choice
+        options: ["private", "public", "unlisted"]
+
+permissions:
+  contents: write
+
+jobs:
+  generate-and-upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-liberation
+
+      - name: Install Python deps
+        run: pip install -r requirements.txt
+
+      - name: Decode YouTube token
+        run: |
+          echo "${{ secrets.YOUTUBE_TOKEN_JSON }}" | base64 -d > token.json
+          test -s token.json && echo "token.json OK"
+
+      - name: Generate episode and upload
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'deepseek/deepseek-chat:free' }}
+          TTS_VOICE: ${{ vars.TTS_VOICE || 'en-US-JennyNeural' }}
+          PRIVACY_STATUS: ${{ inputs.privacy || vars.PRIVACY_STATUS || 'private' }}
+          UPLOAD: "1"
+        run: python generate_episode.py
+
+      - name: Save progress state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add state/episodes.json
+          git diff --cached --quiet || (git commit -m "chore: advance episode state" && git push)
+
+      - name: Upload work artifacts for debugging
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: episode-work
+          path: |
+            work/*.json
+            work/*.txt
+            work/*.srt
+          retention-days: 14
