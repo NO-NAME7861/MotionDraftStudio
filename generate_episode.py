@@ -141,7 +141,7 @@ Moral: {row['moral']}"""
 
 def gen_image(prompt, dest, seed):
     url = ("https://image.pollinations.ai/prompt/" + urllib.parse.quote(prompt)
-           + f"?width={W}&height={H}&nologo=true&model=flux&seed={seed}")
+           + f"?width={W}&height={H}&nologo=true&seed={seed}")
     for attempt in range(4):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
