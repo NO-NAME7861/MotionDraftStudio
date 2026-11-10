@@ -15,8 +15,10 @@ from datetime import datetime
 ROOT = Path(__file__).resolve().parent
 WORK = ROOT / "work"
 STATE_FILE = ROOT / "state" / "episodes.json"
-EPISODES_CSV = ROOT / "episodes.csv"
+EPISODES_CSV = ROOT / os.environ.get("EPISODES_CSV", "episodes.csv")
 TOKEN_PATH = ROOT / "token.json"
+PLAYLIST_ID = os.environ.get("PLAYLIST_ID", "PLfE9RY2EzLWE").strip()
+STYLE = os.environ.get("STYLE", "japanese").strip().lower()
 WORK.mkdir(exist_ok=True)
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "").strip()
@@ -106,20 +108,28 @@ def _call_llm_once(model, row, sys_prompt, user_prompt):
     return json.loads(content[start:end + 1])
 
 def call_llm(row):
+    if STYLE == "chinese":
+        style_req = "Chinese-animation (xianxia/wuxia) style"
+        thumbnail_desc = "Chinese-animation (xianxia/wuxia) style"
+        recap_label = "Chinese Animation Recap"
+    else:
+        style_req = "Japanese 2D anime style (modern shoujo/shonen, studio-quality cel shading)"
+        thumbnail_desc = "Japanese 2D anime style (modern shoujo/shonen)"
+        recap_label = "Japanese 2D Anime Recap"
     sys_prompt = (
-        "You are a veteran YouTube scriptwriter for the 'Chinese animation recap' niche. "
-        "You write vivid, original retellings in that style and ALWAYS end with a clear moral. "
+        f"You are a veteran YouTube scriptwriter for the '{'Chinese' if STYLE == 'chinese' else 'Japanese 2D anime'} animation recap' niche. "
+        f"You write vivid, original retellings in that style and ALWAYS end with a clear moral. "
         "Reply ONLY with valid JSON, no markdown fences."
     )
     user_prompt = f"""Write one complete episode in this exact JSON shape:
 {{
- "title": "concise YouTube title, max 70 chars, include 'Chinese Animation Recap' and the episode's moral in brackets",
+ "title": "concise YouTube title, max 70 chars, include '{recap_label}' and the episode's moral in brackets",
  "description": "2-3 sentences hook + 1 line moral + line: This video features AI-generated visuals and AI narration. + subscribe CTA, max 1000 chars",
  "tags": ["max 15 tags"],
  "moral": "one sentence",
  "narration": "1200-1600 words continuous narration, natural spoken English, vivid, dramatic, easy for one voice to read. MUST end with the explicit moral.",
- "image_prompts": ["12 SHORT prompts, each: Chinese-animation (xianxia/wuxia) style, cinematic, dramatic lighting, <scene description>"],
- "thumbnail_prompt": "one dramatic prompt for a 16:9 thumbnail"
+ "image_prompts": ["12 SHORT prompts, each: {style_req}, cinematic, dramatic lighting, <scene description>"],
+ "thumbnail_prompt": "one dramatic prompt for a 16:9 thumbnail in {thumbnail_desc}"
 }}
 
 Episode brief (topic + moral):
@@ -310,6 +320,26 @@ def drive_backup(mp4):
                          fields="id").execute()
     log("backed up to Google Drive /YouTubeAutomation")
 
+# ---------------------------------------------------------------- playlist
+
+def add_to_playlist(video_id):
+    if not PLAYLIST_ID:
+        log("PLAYLIST_ID not set - skipping playlist add")
+        return
+    from google.oauth2.credentials import Credentials
+    from googleapiclient.discovery import build
+    SCOPES = ["https://www.googleapis.com/auth/youtube.upload",
+              "https://www.googleapis.com/auth/youtube"]
+    creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
+    yt = build("youtube", "v3", credentials=creds, cache_discovery=False)
+    try:
+        yt.playlistItems().insert(part="snippet",
+            body={"snippet": {"playlistId": PLAYLIST_ID,
+                              "resourceId": {"kind": "youtube#video", "videoId": video_id}}}).execute()
+        log(f"added to playlist {PLAYLIST_ID}")
+    except Exception as e:
+        log("playlist add failed (non-fatal):", e)
+
 # ---------------------------------------------------------------- main
 
 def main():
@@ -332,7 +362,7 @@ def main():
     seed0 = random.randint(1000, 999999)
     for i, p in enumerate(prompts):
         dest = WORK / f"img_{i:02d}.png"
-        if gen_image(p + ", chinese animation style, xianxia, cinematic lighting, highly detailed", dest, seed0 + i):
+        if gen_image(p + ", Japanese 2D anime style, cinematic lighting, highly detailed" if STYLE != "chinese" else p + ", chinese animation style, xianxia, cinematic lighting, highly detailed", dest, seed0 + i):
             image_paths.append(dest)
         time.sleep(2)
     if len(image_paths) < 8:
@@ -342,7 +372,7 @@ def main():
     run_tts(WORK / "narration.txt", mp3, srt)
 
     thumb = WORK / "thumb.png"
-    gen_image(ep.get("thumbnail_prompt", prompts[0]) + ", chinese animation style, dramatic, cinematic", thumb, seed0 + 999)
+    gen_image(ep.get("thumbnail_prompt", prompts[0]) + (", Japanese 2D anime style, dramatic, cinematic" if STYLE != "chinese" else ", chinese animation style, dramatic, cinematic"), thumb, seed0 + 999)
 
     out_mp4 = WORK / f"episode_{row['id']}.mp4"
     build_video(image_paths, mp3, srt, out_mp4, thumb)
@@ -352,6 +382,7 @@ def main():
         return
 
     vid = youtube_upload(ep, out_mp4, thumb)
+    add_to_playlist(vid)
     try:
         drive_backup(out_mp4)
     except Exception as e:
