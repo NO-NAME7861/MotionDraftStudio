@@ -191,7 +191,7 @@ def youtube_upload(ep, mp4, thumbnail):
     from googleapiclient.http import MediaFileUpload
 
     SCOPES = ["https://www.googleapis.com/auth/youtube.upload",
-              "https://www.googleapis.com/auth/drive.file"]
+              "https://www.googleapis.com/auth/youtube"]
     if not TOKEN_PATH.exists():
         sys.exit("token.json missing - run get_token.py first")
     creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
@@ -228,11 +228,17 @@ def youtube_upload(ep, mp4, thumbnail):
     return vid
 
 def drive_backup(mp4):
+    # Optional: needs token_drive.json (separate token, Drive scope only -
+    # Google forbids mixing YouTube and Drive scopes in one consent)
+    drive_token = ROOT / "token_drive.json"
+    if not drive_token.exists():
+        log("drive backup skipped - token_drive.json not present (optional)")
+        return
     from google.oauth2.credentials import Credentials
     from googleapiclient.discovery import build
     from googleapiclient.http import MediaFileUpload
     SCOPES = ["https://www.googleapis.com/auth/drive.file"]
-    creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
+    creds = Credentials.from_authorized_user_file(str(drive_token), SCOPES)
     drive = build("drive", "v3", credentials=creds, cache_discovery=False)
     q = "name='YouTubeAutomation' and mimeType='application/vnd.google-apps.folder' and trashed=false"
     folders = drive.files().list(q=q, fields="files(id)").execute().get("files", [])

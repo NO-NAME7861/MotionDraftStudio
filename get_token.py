@@ -10,9 +10,11 @@ import json
 import urllib.request, urllib.parse, webbrowser
 from pathlib import Path
 
+# NOTE: Google does NOT allow mixing YouTube scopes with Drive scopes in one consent
+# request. This token is YouTube-only (upload + manage). For Drive backup create a
+# separate token with get_token_drive.py (optional).
 SCOPES = " ".join([
     "https://www.googleapis.com/auth/youtube.upload",
-    "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/youtube",
 ])
 
@@ -44,9 +46,7 @@ def main():
     import http.server, threading
 
     auth_url = "https://accounts.google.com/o/oauth2/v2/auth?" + urllib.parse.urlencode(params)
-    print("Opening browser for Google consent...")
-    print("If it doesn't open, paste this URL in your browser:\n", auth_url)
-    webbrowser.open(auth_url)
+    print("AUTH_URL:", auth_url, flush=True)
 
     code_holder = {}
     class Handler(http.server.BaseHTTPRequestHandler):
