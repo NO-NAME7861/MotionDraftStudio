@@ -15,7 +15,7 @@ from datetime import datetime
 ROOT = Path(__file__).resolve().parent
 WORK = ROOT / "work"
 STATE_FILE = ROOT / "state" / "episodes.json"
-EPISODES_CSV = ROOT / os.environ.get("EPISODES_CSV", "episodes.csv")
+EPISODES_CSV = ROOT / os.environ.get("EPISODES_CSV", "episodes_100.csv")
 TOKEN_PATH = ROOT / "token.json"
 PLAYLIST_ID = os.environ.get("PLAYLIST_ID", "PLfE9RY2EzLWE").strip()
 STYLE = os.environ.get("STYLE", "japanese").strip().lower()
@@ -108,7 +108,8 @@ def _call_llm_once(model, row, sys_prompt, user_prompt):
     return json.loads(content[start:end + 1])
 
 def call_llm(row):
-    if STYLE == "chinese":
+    track = (row.get("track") or STYLE or "japanese").strip().lower()
+    if track == "chinese" or STYLE == "chinese":
         style_req = "Chinese-animation (xianxia/wuxia) style"
         thumbnail_desc = "Chinese-animation (xianxia/wuxia) style"
         recap_label = "Chinese Animation Recap"
@@ -357,12 +358,17 @@ def main():
     (WORK / "narration.txt").write_text(narration, encoding="utf-8")
     log(f"narration words: {len(narration.split())}")
 
+    STYLE_EFFECTIVE = (row.get("track") or STYLE or "japanese").strip().lower()
+    image_suffix = (", chinese animation style, xianxia, cinematic lighting, highly detailed"
+                    if STYLE_EFFECTIVE == "chinese"
+                    else ", Japanese 2D anime style, cinematic lighting, highly detailed")
+
     prompts = ep["image_prompts"][:N_IMAGES]
     image_paths = []
     seed0 = random.randint(1000, 999999)
     for i, p in enumerate(prompts):
         dest = WORK / f"img_{i:02d}.png"
-        if gen_image(p + ", Japanese 2D anime style, cinematic lighting, highly detailed" if STYLE != "chinese" else p + ", chinese animation style, xianxia, cinematic lighting, highly detailed", dest, seed0 + i):
+        if gen_image(p + image_suffix, dest, seed0 + i):
             image_paths.append(dest)
         time.sleep(2)
     if len(image_paths) < 8:
@@ -372,7 +378,7 @@ def main():
     run_tts(WORK / "narration.txt", mp3, srt)
 
     thumb = WORK / "thumb.png"
-    gen_image(ep.get("thumbnail_prompt", prompts[0]) + (", Japanese 2D anime style, dramatic, cinematic" if STYLE != "chinese" else ", chinese animation style, dramatic, cinematic"), thumb, seed0 + 999)
+    gen_image(ep.get("thumbnail_prompt", prompts[0]) + (", chinese animation style, dramatic, cinematic" if STYLE_EFFECTIVE == "chinese" else ", Japanese 2D anime style, dramatic, cinematic"), thumb, seed0 + 999)
 
     out_mp4 = WORK / f"episode_{row['id']}.mp4"
     build_video(image_paths, mp3, srt, out_mp4, thumb)

@@ -63,7 +63,7 @@ jobs:
           OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'google/gemma-4-31b-it:free' }}
           TTS_VOICE: ${{ vars.TTS_VOICE || 'en-US-JennyNeural' }}
           PRIVACY_STATUS: ${{ inputs.privacy || vars.PRIVACY_STATUS || 'public' }}
-          EPISODES_CSV: ${{ inputs.episodes_csv || vars.EPISODES_CSV || 'season2_japanese.csv' }}
+          EPISODES_CSV: ${{ inputs.episodes_csv || vars.EPISODES_CSV || 'episodes_100.csv' }}
           STYLE: ${{ inputs.style || vars.STYLE || 'japanese' }}
           EPISODE_INDEX: ${{ inputs.episode_index || '' }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
