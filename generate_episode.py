@@ -183,11 +183,19 @@ def _pollinations_image(prompt, dest, seed):
     return True
 
 def gen_image(prompt, dest, seed):
+    # Try Pollinations (no key needed, free) first, fall back to CF if set
+    import time
     for attempt in range(3):
         try:
-            if CF_ACCOUNT_ID and CF_API_TOKEN:
-                return _cf_image(prompt, dest, seed)
-            return _pollinations_image(prompt, dest, seed)
+            url = ("https://image.pollinations.ai/prompt/" + urllib.parse.quote(prompt)
+                   + f"?width={W}&height={H}&nologo=true&seed={seed}")
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=120) as r:
+                data = r.read()
+            if len(data) > 15_000:
+                dest.write_bytes(data)
+                return True
+            raise RuntimeError("pollinations too small")
         except Exception as e:
             backoff = [12, 25, 45][min(attempt, 2)]
             log(f"image retry {attempt + 1}/3 (waiting {backoff}s): {e}")
