@@ -41,7 +41,7 @@ DRY_RUN            = os.environ.get("DRY_RUN", "0") == "1"
 EPISODE_OVERRIDE   = os.environ.get("EPISODE_INDEX", "").strip()  # force a specific episode id
 
 W, H, FPS = 1024, 576, 25
-N_IMAGES = 20  # ~1 image per 60-80s for a 25-40 min episode
+N_IMAGES = 16  # CF FLUX schnell; spaced ~5s apart to stay inside free-tier burst rate
 
 # ---------------------------------------------------------------- helpers
 
@@ -131,7 +131,7 @@ def call_llm(row):
  "tags": ["max 15 tags"],
  "moral": "one sentence",
  "narration": "3200-3800 words continuous narration, natural spoken English, vivid, dramatic, easy for one voice to read. Split it into 6-8 short scenes (separated by sentences/paragraph breaks) so viewers never feel a dull moment. MUST end with the explicit moral.",
- "image_prompts": ["20 SHORT prompts, each: {style_req}, cinematic, dramatic lighting, <scene description>"],
+ "image_prompts": ["16 SHORT prompts, each: {style_req}, cinematic, dramatic lighting, <scene description>"],
  "thumbnail_prompt": "one dramatic prompt for a 16:9 thumbnail in {thumbnail_desc}"
 }}
 
@@ -189,8 +189,9 @@ def gen_image(prompt, dest, seed):
                 return _cf_image(prompt, dest, seed)
             return _pollinations_image(prompt, dest, seed)
         except Exception as e:
-            log(f"image retry {attempt + 1}/3: {e}")
-            time.sleep(4)
+            backoff = [12, 25, 45][min(attempt, 2)]
+            log(f"image retry {attempt + 1}/3 (waiting {backoff}s): {e}")
+            time.sleep(backoff)
     log("WARNING: image failed after retries:", prompt[:60])
     return False
 
@@ -426,7 +427,12 @@ def main():
         dest = WORK / f"img_{i:02d}.png"
         if gen_image(p + image_suffix, dest, seed0 + i):
             image_paths.append(dest)
-        time.sleep(2)
+        else:
+            # Abort early if CF quota exhausted; use what we have
+            if len(image_paths) < 8:
+                # try to continue; expect later episodes to be more spaced
+                pass
+        time.sleep(4)
     if len(image_paths) < 8:
         sys.exit(f"only {len(image_paths)} images generated - aborting")
 
