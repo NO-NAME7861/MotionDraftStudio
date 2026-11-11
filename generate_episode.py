@@ -17,7 +17,9 @@ WORK = ROOT / "work"
 STATE_FILE = ROOT / "state" / "episodes.json"
 EPISODES_CSV = ROOT / os.environ.get("EPISODES_CSV", "episodes_100.csv")
 TOKEN_PATH = ROOT / "token.json"
-PLAYLIST_ID = os.environ.get("PLAYLIST_ID", "PLfE9RY2EzLWE").strip()
+PLAYLIST_ID = os.environ.get("PLAYLIST_ID", "").strip()  # optional override: if set, uses this playlist for ALL episodes
+PLAYLIST_TITLE_CN = os.environ.get("PLAYLIST_TITLE_CN", "Chinese Animation Recaps").strip()
+PLAYLIST_TITLE_JP = os.environ.get("PLAYLIST_TITLE_JP", "Japanese 2D Anime Recaps").strip()
 STYLE = os.environ.get("STYLE", "japanese").strip().lower()
 WORK.mkdir(exist_ok=True)
 
@@ -345,9 +347,41 @@ def drive_backup(mp4):
 
 # ---------------------------------------------------------------- playlist
 
-def add_to_playlist(video_id):
-    if not PLAYLIST_ID:
-        log("PLAYLIST_ID not set - skipping playlist add")
+def playlist_for(track):
+    """Return the playlist ID for given track ("chinese" or "japanese"), creating it if missing."""
+    if PLAYLIST_ID:
+        return PLAYLIST_ID
+    title = PLAYLIST_TITLE_CN if track == "chinese" else PLAYLIST_TITLE_JP
+    from google.oauth2.credentials import Credentials
+    from googleapiclient.discovery import build
+    SCOPES = ["https://www.googleapis.com/auth/youtube.upload",
+              "https://www.googleapis.com/auth/youtube"]
+    creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
+    yt = build("youtube", "v3", credentials=creds, cache_discovery=False)
+    try:
+        # find existing by listing mine
+        resp = yt.playlists().list(part="snippet", mine=True, maxResults=50).execute()
+        for item in resp.get("items", []):
+            if item["snippet"]["title"] == title:
+                return item["id"]
+        # create if missing
+        desc = ("Chinese animation (xianxia/wuxia) recap series. "
+                if track == "chinese"
+                else "Japanese 2D anime recap series. ")
+        desc += "AI-generated visuals and voiceover. One moral in every episode."
+        p = yt.playlists().insert(part="snippet,status",
+            body={"snippet": {"title": title, "description": desc, "defaultLanguage": "en"},
+                  "status": {"privacyStatus": "public"}}).execute()
+        log(f"created playlist: {title} -> {p['id']}")
+        return p["id"]
+    except Exception as e:
+        log("WARNING: playlist lookup failed:", e)
+        return None
+
+def add_to_playlist(video_id, track):
+    pid = playlist_for(track or "japanese")
+    if not pid:
+        log("no playlist id - skipping playlist add")
         return
     from google.oauth2.credentials import Credentials
     from googleapiclient.discovery import build
@@ -357,9 +391,9 @@ def add_to_playlist(video_id):
     yt = build("youtube", "v3", credentials=creds, cache_discovery=False)
     try:
         yt.playlistItems().insert(part="snippet",
-            body={"snippet": {"playlistId": PLAYLIST_ID,
+            body={"snippet": {"playlistId": pid,
                               "resourceId": {"kind": "youtube#video", "videoId": video_id}}}).execute()
-        log(f"added to playlist {PLAYLIST_ID}")
+        log(f"added to playlist {pid} ({'chinese' if track == 'chinese' else 'japanese'})")
     except Exception as e:
         log("playlist add failed (non-fatal):", e)
 
@@ -410,7 +444,8 @@ def main():
         return
 
     vid = youtube_upload(ep, out_mp4, thumb)
-    add_to_playlist(vid)
+    track = (row.get("track") or STYLE or "japanese").strip().lower()
+    add_to_playlist(vid, track)
     try:
         drive_backup(out_mp4)
     except Exception as e:
