@@ -39,7 +39,7 @@ DRY_RUN            = os.environ.get("DRY_RUN", "0") == "1"
 EPISODE_OVERRIDE   = os.environ.get("EPISODE_INDEX", "").strip()  # force a specific episode id
 
 W, H, FPS = 1024, 576, 25
-N_IMAGES = 12  # ~1 image per 60-75s for a 10-15 min episode
+N_IMAGES = 20  # ~1 image per 60-80s for a 25-40 min episode
 
 # ---------------------------------------------------------------- helpers
 
@@ -77,7 +77,7 @@ def _call_llm_once(model, row, sys_prompt, user_prompt):
         "messages": [{"role": "system", "content": sys_prompt},
                      {"role": "user", "content": user_prompt}],
         "temperature": 0.9,
-        "max_tokens": 7000,
+        "max_tokens": 7500,
         "reasoning": {"enabled": False},
     }).encode()
 
@@ -128,8 +128,8 @@ def call_llm(row):
  "description": "2-3 sentences hook + 1 line moral + line: This video features AI-generated visuals and AI narration. + subscribe CTA, max 1000 chars",
  "tags": ["max 15 tags"],
  "moral": "one sentence",
- "narration": "1200-1600 words continuous narration, natural spoken English, vivid, dramatic, easy for one voice to read. MUST end with the explicit moral.",
- "image_prompts": ["12 SHORT prompts, each: {style_req}, cinematic, dramatic lighting, <scene description>"],
+ "narration": "3200-3800 words continuous narration, natural spoken English, vivid, dramatic, easy for one voice to read. Split it into 6-8 short scenes (separated by sentences/paragraph breaks) so viewers never feel a dull moment. MUST end with the explicit moral.",
+ "image_prompts": ["20 SHORT prompts, each: {style_req}, cinematic, dramatic lighting, <scene description>"],
  "thumbnail_prompt": "one dramatic prompt for a 16:9 thumbnail in {thumbnail_desc}"
 }}
 
@@ -208,8 +208,8 @@ def media_duration(path):
 
 # ---------------------------------------------------------------- 4. video
 
-KZ_IN  = "z='min(zoom+0.0007,1.18)'"          # zoom in
-KZ_OUT = "z='if(eq(on,1),1.18,max(1.001,zoom-0.0009))'"  # zoom out
+KZ_IN  = "z='min(zoom+0.0011,1.18)'"          # zoom in
+KZ_OUT = "z='if(eq(on,1),1.18,max(1.001,zoom-0.0016))'"  # zoom out
 
 def make_segment(img, seg, d, zoom_in):
     frames = max(int(d * FPS), FPS)
@@ -222,7 +222,29 @@ def make_segment(img, seg, d, zoom_in):
            "-crf", "27", str(seg)]
     subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+def mix_narration_with_bgm(audio):
+    """Mix narration with looping epic ambient BGM at low volume."""
+    bgm = ROOT / "assets" / "music" / "epic_ambient.mp3"
+    if not bgm.exists():
+        log("BGM missing - skipping mix")
+        return audio
+    dur = media_duration(audio)
+    mixed = WORK / "narration_mix.mp3"
+    fade_end = max(0.1, dur - 6)
+    subprocess.run([
+        "ffmpeg", "-y", "-stream_loop", "-1", "-i", str(bgm), "-i", str(audio),
+        "-filter_complex",
+        f"[1:a]volume=1.0[n];[0:a]volume=0.13,"
+        f"afade=t=in:st=0:d=6,afade=t=out:st={fade_end:.2f}:d=6[m];"
+        f"[n][m]amix=inputs=2:duration=first:dropout_transition=2,"
+        f"loudnorm[a]",
+        "-map", "[a]", "-c:a", "libmp3lame", "-q:a", "3", str(mixed)],
+        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    log("BGM mixed with narration (volume 0.13 + loudnorm)")
+    return mixed
+
 def build_video(image_paths, audio, srt, out_mp4, thumb):
+    audio = mix_narration_with_bgm(audio)
     total = media_duration(audio)
     per = total / len(image_paths)
     segs = []
