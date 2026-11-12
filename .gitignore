@@ -4,3 +4,5 @@ work/
 __pycache__/
 *.pyc
 .env
+shorts-work/
+shorts-out/
