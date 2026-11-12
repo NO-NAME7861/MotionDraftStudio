@@ -79,7 +79,7 @@ def _call_llm_once(model, row, sys_prompt, user_prompt):
         "messages": [{"role": "system", "content": sys_prompt},
                      {"role": "user", "content": user_prompt}],
         "temperature": 0.9,
-        "max_tokens": 7500,
+        "max_tokens": 9500,
         "reasoning": {"enabled": False},
     }).encode()
 
@@ -130,7 +130,7 @@ def call_llm(row):
  "description": "2-3 sentences hook + 1 line moral + line: This video features AI-generated visuals and AI narration. + subscribe CTA, max 1000 chars",
  "tags": ["max 15 tags"],
  "moral": "one sentence",
- "narration": "2800-3400 words continuous narration, natural spoken English, vivid, dramatic, easy for one voice to read. Split into 8-10 short scenes so viewers stay engaged. MUST end with the explicit moral.",
+ "narration": "3500-4200 words continuous narration, natural spoken English, vivid, dramatic, easy for one voice to read. Structure it in 10-14 scenes with dramatic peaks, quiet moments, and emotional beats. MUST end with the explicit moral.",
  "image_prompts": ["16 SHORT prompts, each: {style_req}, cinematic, dramatic lighting, <scene description>"],
  "thumbnail_prompt": "one dramatic prompt for a 16:9 thumbnail in {thumbnail_desc}"
 }}
