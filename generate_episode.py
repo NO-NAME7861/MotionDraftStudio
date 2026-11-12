@@ -295,10 +295,21 @@ def youtube_upload(ep, mp4, thumbnail):
     creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
     yt = build("youtube", "v3", credentials=creds, cache_discovery=False)
 
+    default_desc = ep["description"].rstrip()
+    footer = (
+        "\n\n— Motion Draft Studio\n\n"
+        "▶️ Subscribe for daily recaps\n"
+        "▶️ Chinese animation & Japanese 2D anime stories in English narration\n\n"
+        "⚠️ This video contains AI-generated visuals and an AI-generated voiceover.\n\n"
+        "Playlist: https://www.youtube.com/playlist?list=PLJ8DOidoftZM\n\n"
+        "#ChineseAnimationRecap #Japanese2DAnimeRecap #MotionDraftStudio #AnimationRecap #NovelRecap"
+    )
+    full_desc = (default_desc + footer)[:5000]
+
     body = {
         "snippet": {
             "title": ep["title"][:100],
-            "description": ep["description"],
+            "description": full_desc,
             "tags": ep.get("tags", [])[:15],
             "categoryId": "24",  # Entertainment
             "defaultLanguage": "en",
