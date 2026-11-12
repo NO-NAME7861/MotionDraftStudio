@@ -130,7 +130,7 @@ def call_llm(row):
  "description": "2-3 sentences hook + 1 line moral + line: This video features AI-generated visuals and AI narration. + subscribe CTA, max 1000 chars",
  "tags": ["max 15 tags"],
  "moral": "one sentence",
- "narration": "1400-1900 words continuous narration, natural spoken English, vivid, dramatic, easy for one voice to read. Split into 6-8 short scenes so viewers stay engaged. MUST end with the explicit moral.",
+ "narration": "2800-3400 words continuous narration, natural spoken English, vivid, dramatic, easy for one voice to read. Split into 8-10 short scenes so viewers stay engaged. MUST end with the explicit moral.",
  "image_prompts": ["16 SHORT prompts, each: {style_req}, cinematic, dramatic lighting, <scene description>"],
  "thumbnail_prompt": "one dramatic prompt for a 16:9 thumbnail in {thumbnail_desc}"
 }}
