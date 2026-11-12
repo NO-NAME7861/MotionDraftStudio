@@ -170,9 +170,10 @@ def build_short(s):
     )
     sub_srt.write_text(srt_text, encoding="utf-8")
     dur = total  # seconds
-    sub_style = "FontName=Arial,FontSize=42,Bold=-1,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=4,Outline=3,Shadow=0,MarginV=160,Alignment=2"
+    sub_style = "FontName=Arial\\,FontSize=42\\,Bold=-1\\,PrimaryColour=&H00FFFFFF\\,OutlineColour=&H00000000\\,BorderStyle=4\\,Outline=3\\,Shadow=0\\,MarginV=160\\,Alignment=2"
     # 1024x576 -> 9:16 vertical = width 324, height 576; center horizontally
-    vf = f"crop=324:576:(in_w-324)/2:0,scale=576:1024,format=yuv420p,subtitles={sub_srt.as_posix()}:force_style='{sub_style}'"
+    srt_rel = sub_srt.relative_to(ROOT).as_posix()
+    vf = f"crop=324:576:(in_w-324)/2:0,scale=576:1024,format=yuv420p,subtitles='{srt_rel}':force_style='{sub_style}'"
     out_mp4 = OUT / f"{sid}.mp4"
     subprocess.run(["ffmpeg", "-y", "-i", str(concat), "-i", str(mp3),
                     "-vf", vf, "-c:v", "libx264", "-preset", "ultrafast", "-crf", "26",

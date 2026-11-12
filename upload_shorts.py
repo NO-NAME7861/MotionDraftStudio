@@ -82,7 +82,7 @@ def upload_one(yt, token, meta):
         if status:
             print(f"  upload {int(status.progress()*100)}%", flush=True)
     vid = resp["id"]
-    print(f"uploaded {vid} - {meta['title'][:60]}")
+    print(f"uploaded {vid} - {meta['title'][:60]}", flush=True)
     return vid
 
 def playlist_for(yt, creds, series):
