@@ -62,8 +62,14 @@ def main():
     req = urllib.request.Request("https://oauth2.googleapis.com/token", data=body,
                                  method="POST",
                                  headers={"Content-Type": "application/x-www-form-urlencoded"})
-    with urllib.request.urlopen(req) as r:
-        tok = json.loads(r.read())
+    try:
+        with urllib.request.urlopen(req) as r:
+            tok = json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        print("OAUTH EXCHANGE FAILED")
+        print("status:", e.code)
+        print("body:", e.read().decode())
+        raise
 
     out = {
         "token": tok["access_token"],

@@ -16,6 +16,7 @@ from pathlib import Path
 SCOPES = " ".join([
     "https://www.googleapis.com/auth/youtube.upload",
     "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",  # needed for comment thread moderation + posting replies
 ])
 
 def main():
