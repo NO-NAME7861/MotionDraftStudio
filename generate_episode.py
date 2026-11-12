@@ -126,7 +126,7 @@ def call_llm(row):
     )
     user_prompt = f"""Write one complete episode in this exact JSON shape:
 {{
- "title": "concise YouTube title, max 70 chars, include '{recap_label}' and the episode's moral in brackets",
+ "title": "concise YouTube title WITH STRONG HOOK at the start, max 70 chars; put the keyword + 'Chinese Animation Recap' or 'Japanese 2D Anime Recap' at the END of the title. Use concrete, vivid, meme-y hooks like: 'Underdog Who X'd To Y' / 'Broke Carpenter Outfoxed The Demon King' / 'Weak Cultivator Refused Heaven's Throne' / 'Merchant Who Fed A Plague City'. NEVER academic-sounding titles like 'The Poisoned Heir Surviving'. Always write as If Netflix show title; MORAL in brackets optional",
  "description": "2-3 sentences hook + 1 line moral + line: This video features AI-generated visuals and AI narration. + subscribe CTA, max 1000 chars",
  "tags": ["max 15 tags"],
  "moral": "one sentence",
