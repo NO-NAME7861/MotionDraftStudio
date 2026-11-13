@@ -245,13 +245,13 @@ def mix_narration_with_bgm(audio):
     subprocess.run([
         "ffmpeg", "-y", "-stream_loop", "-1", "-i", str(bgm), "-i", str(audio),
         "-filter_complex",
-        f"[1:a]volume=1.0[n];[0:a]volume=0.13,"
+        f"[1:a]volume=1.0[n];[0:a]volume=0.40,"
         f"afade=t=in:st=0:d=6,afade=t=out:st={fade_end:.2f}:d=6[m];"
         f"[n][m]amix=inputs=2:duration=first:dropout_transition=2,"
         f"loudnorm[a]",
         "-map", "[a]", "-c:a", "libmp3lame", "-q:a", "3", str(mixed)],
         check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    log("BGM mixed with narration (volume 0.13 + loudnorm)")
+    log("BGM mixed with narration (volume 0.40 = 40% + loudnorm)")
     return mixed
 
 def build_video(image_paths, audio, srt, out_mp4, thumb):
