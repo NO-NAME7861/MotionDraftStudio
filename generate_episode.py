@@ -33,8 +33,8 @@ FALLBACK_MODELS    = [m for m in [
     "nvidia/nemotron-3-ultra-550b-a55b:free",
     "nvidia/nemotron-3.5-lightning:free",
 ] ]
-VOICE              = os.environ.get("TTS_VOICE", "en-IN-NeerjaExpressiveNeural")
-TTS_RATE           = os.environ.get("TTS_RATE", "+8%")  # energetic Indian pace
+VOICE              = os.environ.get("TTS_VOICE", "en-IN-NeerjaNeural")
+TTS_RATE           = os.environ.get("TTS_RATE", "-5%")  # slower professional news-broadcaster pace
 PRIVACY_STATUS     = os.environ.get("PRIVACY_STATUS", "private")  # safe default; set public when confident
 UPLOAD             = os.environ.get("UPLOAD", "1") == "1"
 DRY_RUN            = os.environ.get("DRY_RUN", "0") == "1"
