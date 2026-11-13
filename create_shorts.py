@@ -71,6 +71,64 @@ PROMPTS = [
         ],
         "tags": ["poll", "ChineseAnimation", "RiceMerchant", "HonourOverWealth", "CultivationRecap", "AnimationRecap", "MotionDraftStudio"],
     },
+    {
+        "id": "W4",
+        "series": "chinese",
+        "hook": "What if you could turn back time?",
+        "question": "Would you stop your friend's death — no matter cost?",
+        "narration": (
+            "A wandering warrior discovers a mirror that can rewind time by exactly one hour. "
+            "At the dawn of the battle, his best friend steps forward, knowing Heaven kills him on the first strike. "
+            "He has one chance, one minute, to pull his friend out before blood touches the ground — "
+            "but changing fate sets fires no mortal should touch. "
+            "So ask yourself: if you could turn back time, would you use it? "
+            "Like for button if yes, comment if no. Subscribe — and let the story answer."
+        ),
+        "image_prompts": [
+            "chinese animation, xianxia fantasy poster, a lone warrior holding a mirror reflecting a battle from history, dramatic cel art, cinematic lighting, no text",
+            "chinese animation, xianxia fantasy poster, a warrior on a bloody battlefield surrounded by fallen comrades, cinematic dramatic cel art, no text",
+            "chinese animation, xianxia fantasy poster, a warrior and his best friend laughing under a crimson sunrise then standing together on a battlefield, dramatic cel art, no text",
+        ],
+        "tags": ["poll", "MotionDraftShorts", "cultivation", "time travel", "sacrifice", "MotionDraftStudio"],
+    },
+    {
+        "id": "W5",
+        "series": "chinese",
+        "hook": "Regicide vs Emperor?",
+        "question": "If the emperor is corrupt, do you still obey?",
+        "narration": (
+            "The imperial throne was earned by blood, sweat, and absolute obedience. "
+            "A young sword-saint learns that the emperor he serves tortures his own subjects "
+            "to forge his ultimate weapon. "
+            "This is not about rebellion. It is about whether loyalty can be twisted into evil. "
+            "Do you still honor your oath to a tyrant? "
+            "Like for loyalty, comment for justice. Subscribe — let the story decide."
+        ),
+        "image_prompts": [
+            "chinese animation, xianxia fantasy poster, an imperial throne room with a crowned figure wrapped in dark robes, dramatic cel art, no text",
+            "chinese animation, xianxia fantasy poster, a young sword saint standing before a throne made of screaming swords, dark dramatic cel art, no text",
+        ],
+        "tags": ["poll", "MotionDraftShorts", "MotionDraftStudio", "ChineseAnimationRecap", "cultivation", "loyalty"],
+    },
+    {
+        "id": "W6",
+        "series": "japanese",
+        "hook": "Why does the quiet kid always win?",
+        "question": "Would you win through patience or strength?",
+        "narration": (
+            "A boy with slow hands and quiet eyes practices bamboo-splitting in the snow for three years for no reason. "
+            "When the warlord's tournament comes, every blade master is twice his size — and every eye laughs. "
+            "Then the match starts, and time disappears. "
+            "So would you trust patience, or strength? "
+            "Like for patience, comment for strength. Subscribe — let the story decide."
+        ),
+        "image_prompts": [
+            "japanese 2D anime poster, a young boy practicing alone in snow with a bamboo katana, dramatic cel shaded art, no text",
+            "japanese 2D anime poster, a tournament battlefield with silent boy facing towering warriors, dramatic cel shaded art, no text",
+            "japanese 2D anime poster, the moment the boy swings and the blade splits everything, dramatic cinematic cel shaded art, no text",
+        ],
+        "tags": ["poll", "MotionDraftShorts", "Japanese2DAnimeRecap", "MotionDraftStudio", "samurai", "patience"],
+    },
 ]
 
 CF_ID = os.environ.get("CF_ACCOUNT_ID", "REDACTED_CF_ACCOUNT_ID").strip()
@@ -112,7 +170,7 @@ def cf_image(prompt, out, seed):
         print(f"pollinations fail: {e}", flush=True)
     return False
 
-def run_tts(text_file, mp3, voice="en-US-JennyNeural"):
+def run_tts(text_file, mp3, voice="en-IN-NeerjaExpressiveNeural"):
     subprocess.run([sys.executable, "-m", "edge_tts", "--file", str(text_file),
                     "--write-media", str(mp3), "--voice", voice], check=True)
 
