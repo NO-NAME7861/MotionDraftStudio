@@ -12,6 +12,10 @@
 - Background music synthesized (epic ambient, 7-minute loop)
 - 15-minute cap eliminated via phone verify
 - State reconcile done
+- First subscriber + tribute video (public thank-you) - https://youtu.be/xkqKR_cJF-w
+- Milestone tribute automation: tribute video at 50 / 100 / 500 / 1000 and every 5K thereafter (4h cron)
+- Shorts W7-W11 (5 new poll hooks) + auto-playlist routing
+- 40-min episode target: >=5000-word narration enforced with expand-retry (ep14 came out 38:04)
 
 ## Next week (Week of 2026-11-16)
 - Video length: 25-30 minutes -> 45-50 minutes per episode

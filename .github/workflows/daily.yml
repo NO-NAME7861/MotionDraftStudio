@@ -71,11 +71,18 @@ jobs:
           UPLOAD: "1"
         run: python generate_episode.py
 
+      - name: Check subscriber milestones (tribute video at 50/100/500/1K/every-5K)
+        continue-on-error: true
+        env:
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: python check_milestones.py
+
       - name: Save progress state
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add state/episodes.json
+          git add state/episodes.json state/milestones.json
           git diff --cached --quiet || (git commit -m "chore: advance episode state" && git pull --rebase origin main && git push origin HEAD:main)
 
       - name: Upload work artifacts for debugging
