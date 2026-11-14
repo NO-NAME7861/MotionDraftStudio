@@ -42,6 +42,7 @@ EPISODE_OVERRIDE   = os.environ.get("EPISODE_INDEX", "").strip()  # force a spec
 
 W, H, FPS = 1024, 576, 25
 N_IMAGES = 20  # CF FLUX schnell; spaced ~5s apart to stay inside free-tier burst rate
+MIN_WORDS = 5000  # floor for narration; -12% TTS speaks ~112 wpm, so 5000 words ~ 45 min video
 
 # ---------------------------------------------------------------- helpers
 
@@ -73,7 +74,7 @@ def mark_done(ep_id):
 
 # ---------------------------------------------------------------- 1. script
 
-def _call_llm_once(model, row, sys_prompt, user_prompt):
+def _call_llm_once(model, sys_prompt, user_prompt):
     payload = json.dumps({
         "model": model,
         "messages": [{"role": "system", "content": sys_prompt},
@@ -109,18 +110,36 @@ def _call_llm_once(model, row, sys_prompt, user_prompt):
         raise RuntimeError("no JSON in reply: " + content[:1500])
     return json.loads(content[start:end + 1])
 
+def _generate_once(sys_prompt, user_prompt):
+    """Try every model (OpenRouter free tier) up to 3 attempts each; return parsed JSON."""
+    models = [OPENROUTER_MODEL] + [m for m in FALLBACK_MODELS if m != OPENROUTER_MODEL]
+    failures = []
+    for model in models:
+        for attempt in range(3):
+            try:
+                ep = _call_llm_once(model, sys_prompt, user_prompt)
+                log(f"LLM OK via {model} (attempt {attempt + 1})")
+                return ep
+            except Exception as e:
+                log(f"model {model} attempt {attempt + 1} failed: {e}")
+                failures.append(f"{model}: {e}")
+                time.sleep(20)
+    sys.exit("All LLM models failed:\n" + "\n\n".join(failures))
+
 def call_llm(row):
     track = (row.get("track") or STYLE or "japanese").strip().lower()
     if track == "chinese" or STYLE == "chinese":
         style_req = "Chinese-animation (xianxia/wuxia) style"
         thumbnail_desc = "Chinese-animation (xianxia/wuxia) style"
         recap_label = "Chinese Animation Recap"
+        sys_topic = "Chinese animation recap"
     else:
         style_req = "Japanese 2D anime style (modern shoujo/shonen, studio-quality cel shading)"
         thumbnail_desc = "Japanese 2D anime style (modern shoujo/shonen)"
         recap_label = "Japanese 2D Anime Recap"
+        sys_topic = "Japanese 2D anime recap"
     sys_prompt = (
-        f"You are a veteran YouTube scriptwriter for the '{'Chinese' if STYLE == 'chinese' else 'Japanese 2D anime'} animation recap' niche. "
+        f"You are a veteran YouTube scriptwriter for the '{sys_topic}' niche. "
         f"You write vivid, original retellings in that style and ALWAYS end with a clear moral. "
         "Reply ONLY with valid JSON, no markdown fences."
     )
@@ -130,7 +149,7 @@ def call_llm(row):
  "description": "2-3 sentences hook + 1 line moral + line: This video features AI-generated visuals and AI narration. + subscribe CTA, max 1000 chars",
  "tags": ["max 15 tags"],
  "moral": "one sentence",
- "narration": "5500-6500 words continuous narration, natural spoken English, vivid, dramatic, easy for one voice to read. Structure it in 14-18 scenes with slow pacing, dramatic peaks, quiet contemplation, and emotional beats. Every scene should land emotionally. MUST end with the explicit moral.",
+ "narration": "5500-6500 words continuous narration, natural spoken English, vivid, dramatic, easy for one voice to read. ABSOLUTE MINIMUM 5200 words, NEVER fewer. Structure it in 14-18 scenes with slow pacing, dramatic peaks, quiet contemplation, and emotional beats. Every scene should land emotionally. MUST end with the explicit moral.",
  "image_prompts": ["20 SHORT prompts, each: {style_req}, cinematic, dramatic lighting, <scene description>"],
  "thumbnail_prompt": "one dramatic prompt for a 16:9 thumbnail in {thumbnail_desc}"
 }}
@@ -139,19 +158,32 @@ Episode brief (topic + moral):
 Title seed: {row['topic']}
 Moral: {row['moral']}"""
 
-    models = [OPENROUTER_MODEL] + [m for m in FALLBACK_MODELS if m != OPENROUTER_MODEL]
-    failures = []
-    for model in models:
-        for attempt in range(3):
-            try:
-                ep = _call_llm_once(model, row, sys_prompt, user_prompt)
-                log(f"LLM OK via {model} (attempt {attempt + 1})")
-                return ep
-            except Exception as e:
-                log(f"model {model} attempt {attempt + 1} failed: {e}")
-                failures.append(f"{model}: {e}")
-                time.sleep(20)
-    sys.exit("All LLM models failed:\n" + "\n\n".join(failures))
+    ep = _generate_once(sys_prompt, user_prompt)
+
+    # Enforce the length floor: free models routinely under-deliver. Re-ask to expand.
+    words = len((ep.get("narration") or "").split())
+    for attempt in range(2):
+        if words >= MIN_WORDS:
+            break
+        log(f"narration only {words} words (< {MIN_WORDS}); asking model to expand (pass {attempt + 1})")
+        expand_prompt = user_prompt + (
+            f"\n\nIMPORTANT: Your previous draft had only {words} words of narration. "
+            f"Rewrite the COMPLETE episode JSON. The narration MUST be AT LEAST {MIN_WORDS + 500} words "
+            "(aim 5500-6200). Expand every scene: sensory detail, character interiority, dialogue, "
+            "quiet beats, rising tension. Do NOT summarize. Do NOT shorten any scene."
+        )
+        try:
+            ep2 = _generate_once(sys_prompt, expand_prompt)
+        except SystemExit as e:
+            log(f"expansion pass failed ({e}); keeping previous narration")
+            break
+        w2 = len((ep2.get("narration") or "").split())
+        log(f"expansion pass {attempt + 1}: {w2} words")
+        if w2 > words:
+            ep, words = ep2, w2
+    if words < MIN_WORDS:
+        log(f"WARNING: narration still only {words} words after retries - video will be shorter than 40 min")
+    return ep
 
 # ---------------------------------------------------------------- 2. images
 
