@@ -34,14 +34,14 @@ FALLBACK_MODELS    = [m for m in [
     "nvidia/nemotron-3.5-lightning:free",
 ] ]
 VOICE              = os.environ.get("TTS_VOICE", "en-IN-NeerjaNeural")
-TTS_RATE           = os.environ.get("TTS_RATE", "-5%")  # slower professional news-broadcaster pace
+TTS_RATE           = os.environ.get("TTS_RATE", "-12%")  # slower, contemplative dramatic pace
 PRIVACY_STATUS     = os.environ.get("PRIVACY_STATUS", "private")  # safe default; set public when confident
 UPLOAD             = os.environ.get("UPLOAD", "1") == "1"
 DRY_RUN            = os.environ.get("DRY_RUN", "0") == "1"
 EPISODE_OVERRIDE   = os.environ.get("EPISODE_INDEX", "").strip()  # force a specific episode id
 
 W, H, FPS = 1024, 576, 25
-N_IMAGES = 16  # CF FLUX schnell; spaced ~5s apart to stay inside free-tier burst rate
+N_IMAGES = 20  # CF FLUX schnell; spaced ~5s apart to stay inside free-tier burst rate
 
 # ---------------------------------------------------------------- helpers
 
@@ -79,7 +79,7 @@ def _call_llm_once(model, row, sys_prompt, user_prompt):
         "messages": [{"role": "system", "content": sys_prompt},
                      {"role": "user", "content": user_prompt}],
         "temperature": 0.9,
-        "max_tokens": 9500,
+        "max_tokens": 13500,
         "reasoning": {"enabled": False},
     }).encode()
 
@@ -130,8 +130,8 @@ def call_llm(row):
  "description": "2-3 sentences hook + 1 line moral + line: This video features AI-generated visuals and AI narration. + subscribe CTA, max 1000 chars",
  "tags": ["max 15 tags"],
  "moral": "one sentence",
- "narration": "3500-4200 words continuous narration, natural spoken English, vivid, dramatic, easy for one voice to read. Structure it in 10-14 scenes with dramatic peaks, quiet moments, and emotional beats. MUST end with the explicit moral.",
- "image_prompts": ["16 SHORT prompts, each: {style_req}, cinematic, dramatic lighting, <scene description>"],
+ "narration": "5500-6500 words continuous narration, natural spoken English, vivid, dramatic, easy for one voice to read. Structure it in 14-18 scenes with slow pacing, dramatic peaks, quiet contemplation, and emotional beats. Every scene should land emotionally. MUST end with the explicit moral.",
+ "image_prompts": ["20 SHORT prompts, each: {style_req}, cinematic, dramatic lighting, <scene description>"],
  "thumbnail_prompt": "one dramatic prompt for a 16:9 thumbnail in {thumbnail_desc}"
 }}
 
