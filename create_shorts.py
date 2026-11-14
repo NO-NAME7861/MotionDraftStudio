@@ -129,6 +129,103 @@ PROMPTS = [
         ],
         "tags": ["poll", "MotionDraftShorts", "Japanese2DAnimeRecap", "MotionDraftStudio", "samurai", "patience"],
     },
+    {
+        "id": "W7",
+        "series": "chinese",
+        "hook": "Revenge or release?",
+        "question": "Would you take revenge or let it go?",
+        "narration": (
+            "At nineteen, she watches the demon sect slaughter her clan before her eyes. "
+            "Her master finds her and says: grief can burn, or it can build. "
+            "Revenge would make her the same monster. Release would make her the only one who walks away whole. "
+            "So tell me: revenge, or release? "
+            "Like for revenge, comment for release. Subscribe — this story ends with a moral, every time."
+        ),
+        "image_prompts": [
+            "chinese animation, xianxia fantasy poster, a ruined burning village valley at dusk, a girl kneeling with a broken hairpin in hand, embers in the air, dramatic cel art, no text",
+            "chinese animation, xianxia fantasy poster, a teenage cultivator girl with tears and a cold straight sword, standing on the battlefield, dramatic cinematic lighting, no text",
+            "chinese animation, xianxia fantasy poster, a phoenix rising from ashes over a silent mountain ridge, girl walking away toward a new dawn, epic dramatic cel art, no text",
+        ],
+        "tags": ["poll", "chinese animation", "CultivationRecap", "RevengeVsRelease", "AnimationRecap", "MotionDraftShorts", "MotionDraftStudio"],
+    },
+    {
+        "id": "W8",
+        "series": "chinese",
+        "hook": "Would you disobey Heaven?",
+        "question": "Defy fate or accept it?",
+        "narration": (
+            "Heaven's judgment has spoken — the heroine's family must fall. "
+            "But a young disciple reads the omen one day early, and understands: "
+            "fate is not a law, it is a test. Heaven expects him to accept it quietly. "
+            "He chooses not to. "
+            "Would you defy Heaven itself for someone you love? "
+            "Like for love, comment for fate. Subscribe — the next legend starts tomorrow."
+        ),
+        "image_prompts": [
+            "chinese animation, xianxia fantasy poster, a disciple holding a torn omen scroll under a blood-red eclipse sky, dramatic cel art, no text",
+            "chinese animation, xianxia fantasy poster, a young cultivator kneeling before a temple altar deciding against the heavens, thunder gathers, dramatic cinematic lighting, no text",
+            "chinese animation, xianxia fantasy poster, a warrior standing between a falling lightning bolt and a small family at the village gate, epic dramatic cel art, no text",
+        ],
+        "tags": ["poll", "chinese animation", "CultivationRecap", "DefyFate", "AnimationRecap", "MotionDraftShorts", "MotionDraftStudio"],
+    },
+    {
+        "id": "W9",
+        "series": "japanese",
+        "hook": "Lose one match to learn it?",
+        "question": "Lose once, or fight to win?",
+        "narration": (
+            "The tournament opens with a champion no challenger has ever read. "
+            "A quiet second-year student watches one single match, and notices a rhythm nobody else saw. "
+            "His coach asks him: train to fight, or study to learn? "
+            "One deliberate loss. One perfect trap. "
+            "Would you choose victory, or the truth behind it? "
+            "Like to learn, comment to win. Subscribe — every story has a moral."
+        ),
+        "image_prompts": [
+            "japanese 2D anime poster, a tournament arena with a tall undefeated champion and a small quiet observer in the stands, dramatic cel shaded art, no text",
+            "japanese 2D anime poster, a quiet student sitting alone under a dojo roof with a notebook, strategy diagrams swirling around him, dramatic cel shaded art, no text",
+            "japanese 2D anime poster, the exact moment a challenger steps forward with total calm, all eyes in the crowd on him, dramatic cinematic cel shading, no text",
+        ],
+        "tags": ["poll", "japanese 2D anime", "AnimeRecap", "Strategy", "Underdog", "AnimationRecap", "MotionDraftShorts", "MotionDraftStudio"],
+    },
+    {
+        "id": "W10",
+        "series": "japanese",
+        "hook": "Would you stand with the quiet one?",
+        "question": "Together or alone?",
+        "narration": (
+            "He never speaks. Not in class, not at practice, not when it matters. "
+            "But his bag is always packed with spare supplies, and the juniors' erasers always find their way back through him. "
+            "Until the day he simply stops. "
+            "Only then does the whole school finally notice what he carried, every single day. "
+            "Would you let him carry everyone alone, or finally stand beside him? "
+            "Like for together, comment for alone. Subscribe — tomorrow brings another recap."
+        ),
+        "image_prompts": [
+            "japanese 2D anime poster, a quiet boy in a classroom with erasers and books, morning sunlight through windows, melancholic dramatic cel shaded art, no text",
+            "japanese 2D anime poster, a school hallway where junior students each silently receive what they need from one silent boy, dramatic cel shaded art, no text",
+            "japanese 2D anime poster, the whole school standing and looking at one empty desk, shared silence, dramatic cinematic cel shading, no text",
+        ],
+        "tags": ["poll", "japanese 2D anime", "AnimeRecap", "QuietHero", "AnimationRecap", "MotionDraftShorts", "MotionDraftStudio"],
+    },
+    {
+        "id": "W11",
+        "series": "japanese",
+        "hook": "Break the ledger?",
+        "question": "Truth or survival?",
+        "narration": (
+            "In a corporate anime nobody says it out loud — the family company is rotten, and the youngest heir just found the ledger proving it. "
+            "Burn it, and the company survives another year. Leak it, and the truth burns everything — including the hundreds of workers who depend on it staying alive. "
+            "Which is loyalty, really — the company, or the truth? "
+            "Like for truth, comment for survival. Subscribe — every recap, a new legend."
+        ),
+        "image_prompts": [
+            "japanese 2D anime poster, a young heir in a dark corporate office holding one old leather ledger, rain against floor-to-ceiling windows, dramatic cel shaded art, no text",
+            "japanese 2D anime poster, two stacks of files — one burning in a trash can, one resting on a desk — the boy's hand frozen between them, dramatic cel shaded art, no text",
+            "japanese 2D anime poster, a late-night office tower glowing with half-lit windows, one small figure silhouetted on the top floor, dramatic cinematic cel shading, no text",
+        ],
+        "tags": ["poll", "japanese 2D anime", "AnimeRecap", "CorporateDrama", "AnimationRecap", "MotionDraftShorts", "MotionDraftStudio"],
+    },
 ]
 
 CF_ID = os.environ.get("CF_ACCOUNT_ID", "REDACTED_CF_ACCOUNT_ID").strip()
@@ -241,7 +338,9 @@ def build_short(s):
     print(f"[built] {out_mp4.name} ({sz/1e6:.1f} MB, {dur:.1f}s)")
 
 def main():
-    for s in PROMPTS:
+    only = sys.argv[1:]
+    targets = [s for s in PROMPTS if s["id"] in only] if only else PROMPTS
+    for s in targets:
         print(f"\n=== {s['id']} ({s['series']}) ===", flush=True)
         try:
             build_short(s)

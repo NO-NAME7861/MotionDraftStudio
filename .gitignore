@@ -7,3 +7,6 @@ __pycache__/
 shorts-work/
 shorts-out/
 sync.log
+gift-work/
+gift-out/
+*.log

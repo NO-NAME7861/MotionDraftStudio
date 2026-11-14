@@ -91,6 +91,70 @@ META = [
         ),
         "tags": ["Shorts", "MotionDraftShorts", "samurai", "patience", "Japanese2DAnimeRecap", "MotionDraftStudio"],
     },
+    {
+        "file": "W7.mp4",
+        "series": "chinese",
+        "title": "Revenge or release — which would YOU choose? #Shorts",
+        "description": (
+            "She watches the demon sect slaughter her clan before her eyes. "
+            "Revenge would make her the same monster — release makes her the only one who walks away whole.\n\n"
+            "Like for revenge · Comment for release.\n\n"
+            "Warning: AI-generated visuals and narration.\n\n"
+            "#MotionDraftShorts #MotionDraftStudio #ChineseAnimationRecap"
+        ),
+        "tags": ["Shorts", "MotionDraftShorts", "ChineseAnimationRecap", "CultivationRecap", "RevengeVsRelease", "MotionDraftStudio"],
+    },
+    {
+        "file": "W8.mp4",
+        "series": "chinese",
+        "title": "Would you disobey Heaven to save her? #Shorts",
+        "description": (
+            "Heaven's judgment: the heroine's family must fall. "
+            "A disciple reads the omen a day early — and understands fate is a test, not a law.\n\n"
+            "Like for love · Comment for fate.\n\n"
+            "Warning: AI-generated visuals and narration.\n\n"
+            "#MotionDraftShorts #MotionDraftStudio #ChineseAnimationRecap"
+        ),
+        "tags": ["Shorts", "MotionDraftShorts", "ChineseAnimationRecap", "CultivationRecap", "DefyFate", "MotionDraftStudio"],
+    },
+    {
+        "file": "W9.mp4",
+        "series": "japanese",
+        "title": "Lose one match to learn his weakness? #Shorts",
+        "description": (
+            "The champion nobody has read. One quiet student watches one match — "
+            "and sees the rhythm no one else did.\n\n"
+            "Like to learn · Comment to win.\n\n"
+            "Warning: AI-generated visuals and narration.\n\n"
+            "#MotionDraftShorts #MotionDraftStudio #Japanese2DAnimeRecap"
+        ),
+        "tags": ["Shorts", "MotionDraftShorts", "Japanese2DAnimeRecap", "AnimeRecap", "Underdog", "MotionDraftStudio"],
+    },
+    {
+        "file": "W10.mp4",
+        "series": "japanese",
+        "title": "Would you stand with the quiet one? #Shorts",
+        "description": (
+            "He never speaks. But the juniors' erasers always find their way home — until the day he stops.\n\n"
+            "Like for together · Comment for alone.\n\n"
+            "Warning: AI-generated visuals and narration.\n\n"
+            "#MotionDraftShorts #MotionDraftStudio #Japanese2DAnimeRecap"
+        ),
+        "tags": ["Shorts", "MotionDraftShorts", "Japanese2DAnimeRecap", "AnimeRecap", "QuietHero", "MotionDraftStudio"],
+    },
+    {
+        "file": "W11.mp4",
+        "series": "japanese",
+        "title": "Break the ledger? Truth vs survival. #Shorts",
+        "description": (
+            "The family company is rotten — and the youngest heir just found the ledger proving it. "
+            "Burn it, or leak it and burn everything?\n\n"
+            "Like for truth · Comment for survival.\n\n"
+            "Warning: AI-generated visuals and narration.\n\n"
+            "#MotionDraftShorts #MotionDraftStudio #Japanese2DAnimeRecap"
+        ),
+        "tags": ["Shorts", "MotionDraftShorts", "Japanese2DAnimeRecap", "AnimeRecap", "CorporateDrama", "MotionDraftStudio"],
+    },
 ]
 
 CN_TITLE = "Chinese Animation Shorts"
