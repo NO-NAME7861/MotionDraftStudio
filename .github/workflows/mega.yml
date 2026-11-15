@@ -10,10 +10,15 @@ on:
         type: choice
         options: ["M001", "M002", "M003"]
       skip_llm:
-        description: "Skip LLM stage, use salvaged mega-salvage/narration.txt (zero LLM calls)"
+        description: "Skip LLM stage, use salvaged narration file (zero LLM calls)"
         required: false
         default: false
         type: boolean
+      salvage_file:
+        description: "Salvage file to use when skip_llm=true"
+        required: false
+        default: "mega-salvage/narration.txt"
+        type: string
 
 permissions:
   contents: write
@@ -52,6 +57,7 @@ jobs:
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           MEGA_VARIANT: ${{ inputs.variant || 'M001' }}
           MEGA_SKIP_LLM: ${{ inputs.skip_llm && '1' || '0' }}
+          MEGA_SALVAGE_FILE: ${{ inputs.salvage_file || 'mega-salvage/narration.txt' }}
         run: python make_mega_video.py
 
       - name: Upload work artifacts

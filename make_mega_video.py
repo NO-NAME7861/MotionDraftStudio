@@ -247,8 +247,9 @@ def main():
 
     log(f"=== MEGA: {EPISODE_ID} | 7 parts Devanagari ===")
     if os.environ.get("MEGA_SKIP_LLM") == "1":
-        log("MEGA_SKIP_LLM=1 - loading salvaged narration, zero LLM calls")
-        narration = Path("mega-salvage/narration.txt").read_text(encoding="utf-8")
+        salvage_file = os.environ.get("MEGA_SALVAGE_FILE", "mega-salvage/narration.txt")
+        log(f"MEGA_SKIP_LLM=1 - loading salvaged narration from {salvage_file}")
+        narration = Path(salvage_file).read_text(encoding="utf-8")
         total_words = len(narration.split())
         log(f"salvaged narration: {total_words} words")
     else:
