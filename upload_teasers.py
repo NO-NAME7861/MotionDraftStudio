@@ -4,6 +4,8 @@ upload_teasers.py - upload the 5 mega-video teaser shorts (public, Chinese Short
 Usage: python upload_teasers.py --mega-url https://youtu.be/XXXX   (direct link in description)
        python upload_teasers.py                                     (description points to channel)
 """
+import sys
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 import argparse
 from pathlib import Path
 from google.oauth2.credentials import Credentials
@@ -75,8 +77,10 @@ META = [
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mega-url", default="youtube.com/@MotionDraftStudio (channel page)")
+    ap.add_argument("only", nargs="*", help="upload only these ids (e.g. T3 T4 T5)")
     args = ap.parse_args()
     mega_link = args.mega_url
+    only = set(args.only)
 
     if not TOKEN_PATH.exists():
         raise SystemExit("token.json missing")
@@ -86,6 +90,8 @@ def main():
     yt = build("youtube", "v3", credentials=creds, cache_discovery=False)
 
     for m in META:
+        if only and m["file"].replace(".mp4", "") not in only:
+            continue
         f = OUT / m["file"]
         if not f.exists():
             print(f"SKIP {m['file']} - missing")
