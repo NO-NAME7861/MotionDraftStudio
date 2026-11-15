@@ -246,12 +246,18 @@ def main():
         sys.exit("OPENROUTER_API_KEY not set")
 
     log(f"=== MEGA: {EPISODE_ID} | 7 parts Devanagari ===")
-    parts = []
-    for i in range(1, 8):
-        parts.append(call_part(i))
-    narration = "\n\n".join(p.strip() for p in parts)
-    total_words = len(narration.split())
-    log(f"TOTAL narration: {total_words} words (~{total_words / 100:.0f} min @100wpm Hindi)")
+    if os.environ.get("MEGA_SKIP_LLM") == "1":
+        log("MEGA_SKIP_LLM=1 - loading salvaged narration, zero LLM calls")
+        narration = Path("mega-salvage/narration.txt").read_text(encoding="utf-8")
+        total_words = len(narration.split())
+        log(f"salvaged narration: {total_words} words")
+    else:
+        parts = []
+        for i in range(1, 8):
+            parts.append(call_part(i))
+        narration = "\n\n".join(p.strip() for p in parts)
+        total_words = len(narration.split())
+        log(f"TOTAL narration: {total_words} words (~{total_words / 100:.0f} min @100wpm Hindi)")
 
     # -------- Extension loop: guarantee the final video is >= 2 hours --------
     for ext in range(4):
