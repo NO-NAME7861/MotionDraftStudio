@@ -34,7 +34,8 @@ jobs:
       - name: Build and upload mega episode (2h+)
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'nvidia/nemotron-3-ultra-550b-a55b:free' }}
+          OPENROUTER_MODEL: "nvidia/nemotron-3-ultra-550b-a55b:free"  # repo var gemma-4-31b-it:free is persistently 429; ultra actually answers
+          # (intentionally NOT using vars.OPENROUTER_MODEL here - it forces the 429ing model)
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           MEGA_ID: M001

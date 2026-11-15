@@ -203,6 +203,27 @@ Moral: {row['moral']}"""
 
 # ---------------------------------------------------------------- 2. images
 
+def make_synthetic_image(dest, idx):
+    """Quota-proof fallback: FFmpeg-only moody xianxia gradient + noise, no network, no API.
+    Guarantees a full video even when CF Workers AI is 429-ing and Pollinations is down."""
+    palettes = [
+        ("0x1a0f2e", "0x4a2c5a", "0xc94f32"),
+        ("0x0f1d3d", "0x274060", "0x4a8f8f"),
+        ("0x241424", "0x45224a", "0xe0a526"),
+        ("0x081c2b", "0x1c3d4a", "0x3fa7a0"),
+        ("0x1b1122", "0x3d1f3f", "0xc95e5e"),
+    ]
+    c0, c1, c2 = palettes[idx % len(palettes)]
+    vf = (f"gradients=s={W}x{H}:nb_colors=3:c0={c0}:c1={c1}:c2={c2}:speed=0.0,"
+          f"noise=alls=8:allf=t,vignette=PI/4.8")
+    r = subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", vf,
+                        "-frames:v", "1", "-q:v", "2", str(dest)],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if r.returncode == 0 and Path(dest).exists() and Path(dest).stat().st_size > 2000:
+        log("synthetic gradient image:", Path(dest).name)
+        return True
+    return False
+
 def _cf_image(prompt, dest, seed):
     import base64
     payload = json.dumps({"prompt": prompt}).encode()
@@ -231,24 +252,20 @@ def _pollinations_image(prompt, dest, seed):
     return True
 
 def gen_image(prompt, dest, seed):
-    # Try Pollinations (no key needed, free) first, fall back to CF if set
-    import time
-    for attempt in range(3):
+    """CF FLUX first (if env has creds), Pollinations second (fast fail), else False.
+    Backoff removed: Pollinations is currently 402/503-dead and CF 429s are daily-quota errors -
+    neither is fixed by sleeping. The caller fills missing images with synthetic gradients."""
+    if CF_ACCOUNT_ID and CF_API_TOKEN:
         try:
-            url = ("https://image.pollinations.ai/prompt/" + urllib.parse.quote(prompt)
-                   + f"?width={W}&height={H}&nologo=true&seed={seed}")
-            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-            with urllib.request.urlopen(req, timeout=120) as r:
-                data = r.read()
-            if len(data) > 15_000:
-                dest.write_bytes(data)
-                return True
-            raise RuntimeError("pollinations too small")
+            _cf_image(prompt, dest, seed)
+            return True
         except Exception as e:
-            backoff = [12, 25, 45][min(attempt, 2)]
-            log(f"image retry {attempt + 1}/3 (waiting {backoff}s): {e}")
-            time.sleep(backoff)
-    log("WARNING: image failed after retries:", prompt[:60])
+            log(f"cf failed: {str(e)[:80]}")
+    try:
+        _pollinations_image(prompt, dest, seed)
+        return True
+    except Exception as e:
+        log(f"pollinations failed: {str(e)[:60]}")
     return False
 
 # ---------------------------------------------------------------- 3. voice
@@ -494,14 +511,16 @@ def main():
         dest = WORK / f"img_{i:02d}.png"
         if gen_image(p + image_suffix, dest, seed0 + i):
             image_paths.append(dest)
-        else:
-            # Abort early if CF quota exhausted; use what we have
-            if len(image_paths) < 8:
-                # try to continue; expect later episodes to be more spaced
-                pass
-        time.sleep(4)
-    if len(image_paths) < 8:
-        sys.exit(f"only {len(image_paths)} images generated - aborting")
+        time.sleep(2)
+    # Quoteoma apocalypse safety net: fill the remainder with synthetic gradients
+    if len(image_paths) < N_IMAGES:
+        log(f"only {len(image_paths)} real images - filling the rest with synthetic gradients")
+        for j in range(N_IMAGES - len(image_paths)):
+            synth = WORK / f"img_syn_{j:02d}.png"
+            if make_synthetic_image(synth, len(image_paths) + j):
+                image_paths.append(synth)
+    if not image_paths:
+        sys.exit("no images at all - aborting")
 
     mp3, srt = WORK / "narration.mp3", WORK / "narration.srt"
     run_tts(WORK / "narration.txt", mp3, srt)

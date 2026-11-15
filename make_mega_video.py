@@ -260,6 +260,26 @@ def _generate(prompt, label, min_words=1600, floor_accept=700):
         return best
     sys.exit(f"{label} failed on all models - nothing usable returned")
 
+def make_synthetic_image(dest, idx):
+    """Quota-proof fallback: FFmpeg-only moody gradient + noise."""
+    palettes = [
+        ("0x1a0f2e", "0x4a2c5a", "0xc94f32"),
+        ("0x0f1d3d", "0x274060", "0x4a8f8f"),
+        ("0x241424", "0x45224a", "0xe0a526"),
+        ("0x081c2b", "0x1c3d4a", "0x3fa7a0"),
+        ("0x1b1122", "0x3d1f3f", "0xc95e5e"),
+    ]
+    c0, c1, c2 = palettes[idx % len(palettes)]
+    vf = (f"gradients=s={W}x{H}:nb_colors=3:c0={c0}:c1={c1}:c2={c2}:speed=0.0,"
+          f"noise=alls=8:allf=t,vignette=PI/4.8")
+    r = subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", vf,
+                        "-frames:v", "1", "-q:v", "2", str(dest)],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if r.returncode == 0 and Path(dest).exists() and Path(dest).stat().st_size > 2000:
+        log("synthetic gradient image:", Path(dest).name)
+        return True
+    return False
+
 def cf_image(prompt, dest, seed):
     """CF FLUX schnell -> Pollinations fallback (same as create_shorts)."""
     payload = json.dumps({"prompt": prompt}).encode()
@@ -386,8 +406,14 @@ Return ONLY JSON: {{"part": 8, "narration": "..."}}"""
         if cf_image(p, dest, seed0 + i):
             image_paths.append(dest)
         time.sleep(1)
-    if len(image_paths) < 12:
-        sys.exit(f"only {len(image_paths)} images - aborting")
+    if len(image_paths) < N_IMAGES:
+        log(f"only {len(image_paths)} real images - filling with synthetic gradients")
+        for j in range(N_IMAGES - len(image_paths)):
+            synth = WORK / f"img_syn_{j:02d}.png"
+            if make_synthetic_image(synth, len(image_paths) + j):
+                image_paths.append(synth)
+    if not image_paths:
+        sys.exit("no images at all - aborting")
 
     log("=== THUMB ===")
     thumb_dest = WORK / "thumb.png"
