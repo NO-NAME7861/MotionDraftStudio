@@ -19,6 +19,33 @@ on:
         required: false
         default: "mega-salvage/narration.txt"
         type: string
+      mega_rate:
+        description: "TTS rate override (e.g. -25% for slow epic pace)"
+        required: false
+        default: "-2%"
+        type: string
+  workflow_call:
+    inputs:
+      variant:
+        description: "Story variant M001/M002/M003"
+        required: true
+        default: M001
+        type: string
+      skip_llm:
+        description: "Skip LLM stage"
+        required: false
+        default: false
+        type: boolean
+      salvage_file:
+        description: "Salvage file to use when skip_llm=true"
+        required: false
+        default: "mega-salvage/narration.txt"
+        type: string
+      mega_rate:
+        description: "TTS rate override"
+        required: false
+        default: "-2%"
+        type: string
 
 permissions:
   contents: write
@@ -58,6 +85,7 @@ jobs:
           MEGA_VARIANT: ${{ inputs.variant || 'M001' }}
           MEGA_SKIP_LLM: ${{ inputs.skip_llm && '1' || '0' }}
           MEGA_SALVAGE_FILE: ${{ inputs.salvage_file || 'mega-salvage/narration.txt' }}
+          MEGA_RATE: ${{ inputs.mega_rate || '-2%' }}
         run: python make_mega_video.py
 
       - name: Upload work artifacts

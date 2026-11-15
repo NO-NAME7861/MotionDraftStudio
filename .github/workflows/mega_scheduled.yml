@@ -1,0 +1,26 @@
+name: Mega Scheduled Queue (M002 + M003)
+
+on:
+  workflow_dispatch:
+  schedule:
+    # one-shot: Nov 16 2026 00:30 UTC = 05:30 AM PKT Nov 16
+    # (free OpenRouter quota refresh window; M002 first, then M003)
+    - cron: "30 0 16 11 *"
+
+jobs:
+  m002:
+    name: M002 - Ronin samurai recap (JP)
+    uses: ./.github/workflows/mega.yml
+    with:
+      variant: M002
+      skip_llm: false
+      mega_rate: "-2%"
+
+  m003:
+    name: M003 - Earthen god 20yr revenge recap (CN)
+    needs: m002
+    uses: ./.github/workflows/mega.yml
+    with:
+      variant: M003
+      skip_llm: false
+      mega_rate: "-2%"
