@@ -28,6 +28,9 @@ TEASERS = [
             "chinese animation, xianxia key visual, a 19 year old genius disciple on a mountain trial rope under lightning, red banners, cel art, dramatic, no text",
             "chinese animation, azure heaven pavilion tower above clouds at dusk, dragon banners, xianxia cel art, no text",
             "chinese animation, an elder brother cutting a betrayal rope above a storm ravine, lightning, dramatic cel art, no text",
+            "chinese animation, close-up of a pale hand gripping a frayed red rope above clouds, golden hour, cel art, no text",
+            "chinese animation, panoramic view of azure heaven pavilion courtyards with bowing disciples in rows, cel art, no text",
+            "chinese animation, close-up of a broken prayer bead spinning into dark clouds below, macro perspective, no text",
         ],
         "narration": (
             "हर कोई कहता था कि चेन यिरांग जानता है आगे क्या होगा। "
@@ -44,6 +47,9 @@ TEASERS = [
             "chinese animation, a storm on Thunder Crag, a disciple hanging from a single rope above a ravine, lightning strikes, cel art, no text",
             "chinese animation, a body falling against a stormy dark sky, one hand reaching upward, cinematic cel art, no text",
             "chinese animation, broken red prayer bead on wet grass, rain, macro perspective, no text",
+            "chinese animation, close-up of a cropped blood-red open palm print on a welcome letter, rain drops hitting the paper, no text",
+            "chinese animation, a wide shot of the storm cliff above a vast river valley far below, lightning bursts across the sky, no text",
+            "chinese animation, first-person view of the ground rushing up through heavy rain and wind blur, cel art, no text",
         ],
         "narration": (
             "रस्सी कटने की आवाज़ सिर्फ हवा की नहीं थी। "
@@ -60,6 +66,9 @@ TEASERS = [
             "chinese animation, a young man wet in river grass under red lanterns opening his eyes, rain, cel art, no text",
             "chinese animation, an underworld auction hall with shaded booths and screens of files, candle glow, no people, no text",
             "chinese animation, a dying crime kingpin in an obsidian armor chair with a ledger, smoke, cel art, no text",
+            "chinese animation, close-up of eyes opening beneath reflection of a red lantern, rain drops between the lashes, no text",
+            "chinese animation, a long corridor of red lanterns stretching into deep darkness, long silhouettes on wet tiles, cel art, no text",
+            "chinese animation, a ledger book opened to rows of numbers with one glowing red seal, wet hands turning the page, no text",
         ],
         "narration": (
             "मरा हुआ था वो। कम से कम सब यही सोचते थे। "
@@ -76,6 +85,9 @@ TEASERS = [
             "chinese animation, a brother in shackles in a cell lit blood red, one visitor standing outside, cel art, no text",
             "chinese animation, a silver plate with an old black leather ledger on it in a courtroom, candles, no text",
             "chinese animation, an old mentor's face crumbling as students turn around in a great hall, cel art, no text",
+            "chinese animation, close-up of a shattered wine glass on marble during a toast, wine drops frozen in air, no text",
+            "chinese animation, an empty courtroom bench with a glowing microphone and red-sealed documents, candles flickering, no text",
+            "chinese animation, silhouette of a hooded figure watching a stage from a high balcony, dust motes in a spotlight, no text",
         ],
         "narration": (
             "पहला वार हमेशा सबसे चुपचाप होता है। "
@@ -92,6 +104,9 @@ TEASERS = [
             "chinese animation, a hidden throne room under a sect with chains and masks, fog, dark gold, no text",
             "chinese animation, hundreds of glowing papers flying out of a palace city, every screen goes red at once, cel art, no text",
             "chinese animation, a silhouette on a rooftop above a glowing burning throne, lightning behind, cel art, no text",
+            "chinese animation, close-up of a lone red paper talisman rising from still water, night sky reflected in the lake, no text",
+            "chinese animation, the distant palace crumbling as every screen turns red, ash rain over crowds in the plaza, cel art, no text",
+            "chinese animation, back view of the silent legend walking into a mountain gate at dawn, the city below awake, no text",
         ],
         "narration": (
             "और फिर वो फाइनल रात आई। "
