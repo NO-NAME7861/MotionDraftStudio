@@ -21,12 +21,13 @@ N_IMAGES = 32
 EPISODE_ID = os.environ.get("MEGA_ID", "M001")
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "").strip()
-OPENROUTER_MODEL   = os.environ.get("OPENROUTER_MODEL", "google/gemma-4-31b-it:free")
+OPENROUTER_MODEL   = os.environ.get("OPENROUTER_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free")
+# nemotron-ultra is the reliable free model right now - Gemma free models are persistently 429 at peak quota hours
 FALLBACK_MODELS    = [m for m in [
-    "google/gemma-4-31b-it:free",
-    "google/gemma-4-26b-a4b-it:free",
     "nvidia/nemotron-3-ultra-550b-a55b:free",
     "nvidia/nemotron-3.5-lightning:free",
+    "google/gemma-4-31b-it:free",
+    "google/gemma-4-26b-a4b-it:free",
 ]]
 CF_ID    = os.environ.get("CF_ACCOUNT_ID", "")
 CF_TOKEN = os.environ.get("CF_API_TOKEN", "")
@@ -234,24 +235,30 @@ def _call_llm(model, label, user_prompt):
 def call_part(part_idx):
     meta = PARTS[part_idx - 1]
     prompt = PART_PROMPT_TMPL.format(part=part_idx, slug=meta["slug"], beat=meta["beat"])
-    return _generate(prompt, label=f"part {part_idx}", min_words=1600)
+    return _generate(prompt, label=f"part {part_idx}", min_words=1600, floor_accept=400)
 
-def _generate(prompt, label, min_words=1600):
-    models = [OPENROUTER_MODEL] + [m for m in FALLBACK_MODELS if m != OPENROUTER_MODEL]
-    for model in models:
+def _generate(prompt, label, min_words=1600, floor_accept=700):
+    """Try models; keep the BEST partial response. Only hard-fail if literally nothing came back."""
+    best, best_len = "", 0
+    for model in [OPENROUTER_MODEL] + [m for m in FALLBACK_MODELS if m != OPENROUTER_MODEL]:
         for attempt in range(3):
             try:
                 ep = _call_llm(model, label, prompt)
                 nar = ep.get("narration", "")
                 wc = len(nar.split())
-                log(f"{label} via {model}: {wc} words")
+                log(f"{label} via {model} (attempt {attempt+1}): {wc} words")
+                if wc > best_len:
+                    best, best_len = nar, wc
                 if wc >= min_words:
                     return nar
-                log(f"{label} too short, retrying ...")
+                log(f"{label} too short vs target {min_words}, trying again ...")
             except Exception as ex:
                 log(f"{label} {model} attempt {attempt+1} failed: {ex}")
-                time.sleep(40)
-    sys.exit(f"{label} failed on all models")
+                time.sleep(25)
+    if best_len >= floor_accept:
+        log(f"{label}: accepting best effort {best_len} words (models under-deliver today)")
+        return best
+    sys.exit(f"{label} failed on all models - nothing usable returned")
 
 def cf_image(prompt, dest, seed):
     """CF FLUX schnell -> Pollinations fallback (same as create_shorts)."""
@@ -339,7 +346,7 @@ def main():
     log(f"TOTAL narration: {total_words} words (~{total_words / 100:.0f} min @100wpm Hindi)")
 
     # -------- Extension loop: guarantee the final video is >= 2 hours --------
-    for ext in range(3):
+    for ext in range(4):
         Path(WORK / "narration.txt").write_text(narration, encoding="utf-8")
         mp3_probe, srt_probe = WORK / "narration.mp3", WORK / "narration.srt"
         subprocess.run([sys.executable, "-m", "edge_tts",
@@ -365,12 +372,12 @@ Now you MUST extend the same story WITHOUT repeating previous scenes: write a de
 - Never summarize. Keep pace slow, tension high, absolutely no scenes from before the current ending.
 
 Return ONLY JSON: {{"part": 8, "narration": "..."}}"""
-        extra = _generate(ext_prompt, f"extension {ext + 1}", min_words=1800)
+        extra = _generate(ext_prompt, f"extension {ext + 1}", min_words=2000, floor_accept=800)
         narration = narration.rstrip() + "\n\n" + extra.strip()
         total_words = len(narration.split())
         log(f"after extension: {total_words} words")
     else:
-        log("WARNING: after 3 extensions video is still under 2h")
+        log("WARNING: after 4 extensions video is still under 2h")
 
     log("=== IMAGES (32) ===")
     image_paths, seed0 = [], random.randint(1000, 999999)
