@@ -105,10 +105,26 @@ def _call_llm_once(model, sys_prompt, user_prompt):
         raise RuntimeError("empty content: " + json.dumps(resp)[:1500])
 
     content = content.strip()
-    start, end = content.find("{"), content.rfind("}")
-    if start == -1 or end == -1:
+    start = content.find("{")
+    if start == -1:
         raise RuntimeError("no JSON in reply: " + content[:1500])
-    return json.loads(content[start:end + 1])
+    # robust extraction: raw_decode (eats trailing garbage) + escape lone backslashes
+    import re as _re
+    decoder = json.JSONDecoder(strict=False)
+    payload = content[start:]
+    try:
+        obj, _ = decoder.raw_decode(payload)
+        return obj
+    except Exception:
+        fixed = _re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', payload)
+        try:
+            obj, _ = decoder.raw_decode(fixed)
+            return obj
+        except Exception:
+            end = payload.rfind("}")
+            if end <= 0:
+                raise RuntimeError("no JSON in reply: " + content[:1500])
+            return json.loads(fixed[:fixed.rfind("}") + 1], strict=False)
 
 def _generate_once(sys_prompt, user_prompt):
     """Try every model (OpenRouter free tier) up to 3 attempts each; return parsed JSON."""

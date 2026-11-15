@@ -5,7 +5,7 @@ Hindi (Devanagari) + English mixed narration, hi-IN-SwaraNeural voice, 32 images
 
 Runs inside GitHub Actions (mega.yml). Also runnable locally:  python make_mega_video.py
 """
-import os, sys, json, subprocess, random, time, urllib.request, time as _time
+import os, sys, json, subprocess, random, time, urllib.request, urllib.parse, re
 from pathlib import Path
 
 ROOT = Path(__file__).parent
@@ -167,7 +167,8 @@ THIS PART ({part} of 7) - {slug}:
 
 Requirements:
 - DEEP narration in Devanagari Hindi mixed with ENGLISH technical words (like 'betrayal', 'strategy', 'hidden ledger', 'auction', 'system') - exactly the Hindi-English mix Indians love.
-- Target 1850-2100 words. DO NOT write less than 1800 words. Slow pace, heavy suspense.
+- NEVER use double quotes or backslashes inside the narration text. Use Hindi quotes 「 」 or single quotes ' for dialogue instead - keep valid JSON.
+- Target 2100-2400 words. DO NOT write less than 2000 words. Slow pace, heavy suspense.
 - Natural spoken style for one voice. Long, flowing sentences mixed with punchy short ones.
 - Include dialogue (use Hindi quote style), inner monologue, sensory detail (rain, lantern light, heartbeat, paper, metal).
 - Keep tension of a thriller: silence, glances, recorded evidence, courtroom verdicts, rain, crowd pulse.
@@ -181,7 +182,34 @@ Return ONLY JSON: {{"part": {part}, "narration": "..."}}"""
 def log(*a):
     print(f"[{__import__('datetime').datetime.now():%H:%M:%S}]", *a, flush=True)
 
-def _call_llm(model, part_idx, user_prompt):
+def extract_json(text):
+    """Robustly pull the first JSON object out of an LLM reply (Devanagari-safe)."""
+    decoder = json.JSONDecoder(strict=False)
+    m = re.search(r"\{", text)
+    if not m:
+        raise RuntimeError("no JSON in reply: " + text[:1500])
+    start = m.start()
+    payload = text[start:]
+    # 1) plain raw_decode (handles trailing garbage)
+    try:
+        obj, _ = decoder.raw_decode(payload)
+        return obj
+    except Exception:
+        pass
+    # 2) escape lone backslashes (LLMs love illegal \ sequences in Hindi prose)
+    fixed = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', payload)
+    try:
+        obj, _ = decoder.raw_decode(fixed)
+        return obj
+    except Exception:
+        pass
+    # 3) first { ... last } sliced, strict=False, escape-fixed
+    end = payload.rfind("}")
+    if end > 0:
+        return json.loads(fixed[: fixed.rfind("}") + 1], strict=False)
+    raise RuntimeError("no JSON parse possible: " + text[:1500])
+
+def _call_llm(model, label, user_prompt):
     payload = json.dumps({
         "model": model,
         "messages": [{"role": "system", "content":
@@ -201,27 +229,29 @@ def _call_llm(model, part_idx, user_prompt):
     with urllib.request.urlopen(req, timeout=300) as r:
         resp = json.loads(r.read())
     content = resp["choices"][0]["message"]["content"].strip()
-    s, e = content.find("{"), content.rfind("}")
-    return json.loads(content[s:e + 1])
+    return extract_json(content)
 
 def call_part(part_idx):
     meta = PARTS[part_idx - 1]
     prompt = PART_PROMPT_TMPL.format(part=part_idx, slug=meta["slug"], beat=meta["beat"])
+    return _generate(prompt, label=f"part {part_idx}", min_words=1600)
+
+def _generate(prompt, label, min_words=1600):
     models = [OPENROUTER_MODEL] + [m for m in FALLBACK_MODELS if m != OPENROUTER_MODEL]
     for model in models:
-        for attempt in range(2):
+        for attempt in range(3):
             try:
-                ep = _call_llm(model, part_idx, prompt)
+                ep = _call_llm(model, label, prompt)
                 nar = ep.get("narration", "")
                 wc = len(nar.split())
-                log(f"part {part_idx} via {model}: {wc} words")
-                if wc >= 1500:
+                log(f"{label} via {model}: {wc} words")
+                if wc >= min_words:
                     return nar
-                log(f"part {part_idx} too short, retrying ...")
+                log(f"{label} too short, retrying ...")
             except Exception as ex:
-                log(f"part {part_idx} {model} attempt {attempt+1} failed: {ex}")
-                _time.sleep(15)
-    sys.exit(f"part {part_idx} failed on all models")
+                log(f"{label} {model} attempt {attempt+1} failed: {ex}")
+                time.sleep(40)
+    sys.exit(f"{label} failed on all models")
 
 def cf_image(prompt, dest, seed):
     """CF FLUX schnell -> Pollinations fallback (same as create_shorts)."""
@@ -307,8 +337,40 @@ def main():
     narration = "\n\n".join(p.strip() for p in parts)
     total_words = len(narration.split())
     log(f"TOTAL narration: {total_words} words (~{total_words / 100:.0f} min @100wpm Hindi)")
-    txt = WORK / "narration.txt"
-    txt.write_text(narration, encoding="utf-8")
+
+    # -------- Extension loop: guarantee the final video is >= 2 hours --------
+    for ext in range(3):
+        Path(WORK / "narration.txt").write_text(narration, encoding="utf-8")
+        mp3_probe, srt_probe = WORK / "narration.mp3", WORK / "narration.srt"
+        subprocess.run([sys.executable, "-m", "edge_tts",
+                        "--file", str(WORK / "narration.txt"), "--write-media", str(mp3_probe),
+                        "--write-subtitles", str(srt_probe),
+                        "--voice", VOICE, f"--rate={RATE}"], check=True)
+        dur = media_duration(mp3_probe)
+        total_words = len(narration.split())
+        log(f"TTS pass {ext}: {dur:.1f}s ({dur/60:.1f} min), {total_words} words")
+        if dur >= 7200:
+            break
+        tail = " ".join(narration.split()[-700:])
+        ext_prompt = f"""You previously wrote a 7-part mega recap of the Chen Yirang betrayal story (Devanagari Hindi + English mix).
+The story currently ENDS with this final paragraph:
+...{tail}
+
+Now you MUST extend the same story WITHOUT repeating previous scenes: write a deep-dive epilogue interlude of 2300-2800 words:
+- The night before the storm trial (flashback, sensory suspense)
+- What happened to the city between parts (compressed progression scenes with suspense)
+- The day AFTER the Hidden Throne falls (the silence, the empty throne, one last lantern)
+- Then restate the moral EXPLICITLY and powerfully (last line is the moral)
+- Same style: Devanagari Hindi mixed with English technical words. NO double quotes, NO backslashes inside dialogue. Hindi quotes 「 」 or single quotes only.
+- Never summarize. Keep pace slow, tension high, absolutely no scenes from before the current ending.
+
+Return ONLY JSON: {{"part": 8, "narration": "..."}}"""
+        extra = _generate(ext_prompt, f"extension {ext + 1}", min_words=1800)
+        narration = narration.rstrip() + "\n\n" + extra.strip()
+        total_words = len(narration.split())
+        log(f"after extension: {total_words} words")
+    else:
+        log("WARNING: after 3 extensions video is still under 2h")
 
     log("=== IMAGES (32) ===")
     image_paths, seed0 = [], random.randint(1000, 999999)
@@ -324,13 +386,10 @@ def main():
     thumb_dest = WORK / "thumb.png"
     thumb = thumb_dest if cf_image(THUMB_PROMPT, thumb_dest, seed0 + 999) else None
 
-    log("=== TTS (hi-IN-SwaraNeural) ===")
+    # TTS already produced/validated by the extension loop above (narration.txt tracked it)
+    txt = WORK / "narration.txt"
     mp3, srt = WORK / "narration.mp3", WORK / "narration.srt"
-    subprocess.run([sys.executable, "-m", "edge_tts",
-                    "--file", str(txt), "--write-media", str(mp3),
-                    "--write-subtitles", str(srt),
-                    "--voice", VOICE, f"--rate={RATE}"], check=True)
-    log(f"TTS done: {media_duration(mp3):.1f}s")
+    log(f"=== continuing with validated TTS: {media_duration(mp3):.1f}s ===")
 
     log("=== RENDER ===")
     mixed = mix_bgm(mp3)
