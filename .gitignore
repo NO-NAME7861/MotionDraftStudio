@@ -10,3 +10,5 @@ sync.log
 gift-work/
 gift-out/
 *.log
+teasers-work/
+teasers-build.log
