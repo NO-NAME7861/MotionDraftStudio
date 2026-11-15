@@ -1,26 +1,62 @@
-name: Mega Scheduled Queue (M002 + M003)
+name: Mega Queue Watchdog (Daily)
 
 on:
-  workflow_dispatch:
   schedule:
-    # one-shot: Nov 16 2026 00:30 UTC = 05:30 AM PKT Nov 16
-    # (free OpenRouter quota refresh window; M002 first, then M003)
-    - cron: "30 0 16 11 *"
+    # Daily 00:30 UTC = 05:30 PKT — free-quota reset window.
+    # Tries any pending MEGA variant(s); skips already-uploaded ones. Fully autonomous.
+    - cron: "30 0 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
 
 jobs:
-  m002:
-    name: M002 - Ronin samurai recap (JP)
-    uses: ./.github/workflows/mega.yml
-    with:
-      variant: M002
-      skip_llm: false
-      mega_rate: "-2%"
+  mega-queue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
 
-  m003:
-    name: M003 - Earthen god 20yr revenge recap (CN)
-    needs: m002
-    uses: ./.github/workflows/mega.yml
-    with:
-      variant: M003
-      skip_llm: false
-      mega_rate: "-2%"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-liberation fonts-noto-core
+
+      - name: Install Python deps
+        run: pip install -r requirements.txt
+
+      - name: Decode YouTube token
+        run: |
+          echo "${{ secrets.YOUTUBE_TOKEN_JSON }}" | base64 -d > token.json
+          test -s token.json && echo "token.json OK"
+
+      - name: Build and upload pending mega variants (self-healing)
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: "nvidia/nemotron-3-ultra-550b-a55b:free"
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: python mega_queue.py
+
+      - name: Save progress state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add state/mega_queue.json
+          git diff --cached --quiet || (git commit -m "chore: mega queue state" && git pull --rebase origin main && git push origin HEAD:main)
+
+      - name: Upload work artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mega-work-queue
+          path: |
+            mega-work/*.json
+            mega-work/*.txt
+            mega-work/*.srt
+          retention-days: 14
