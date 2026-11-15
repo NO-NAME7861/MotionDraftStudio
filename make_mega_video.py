@@ -18,7 +18,8 @@ W, H, FPS = 1024, 576, 25
 VOICE = "hi-IN-SwaraNeural"
 RATE  = "-2%"
 N_IMAGES = 32
-EPISODE_ID = os.environ.get("MEGA_ID", "M001")
+MEGA_VARIANT = os.environ.get("MEGA_VARIANT", "M001")
+EPISODE_ID = MEGA_VARIANT
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "").strip()
 OPENROUTER_MODEL   = os.environ.get("OPENROUTER_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free")
@@ -34,134 +35,21 @@ CF_TOKEN = os.environ.get("CF_API_TOKEN", "")
 TOKEN_PATH = ROOT / "token.json"
 
 # ------------------------------------------------------------------ story
-TITLE = "Betrayal Ke Baad Wapas Aaya — Silent Thriller King [Chinese Animation Recap Hindi]"
-MORAL = "Betrayal ka jawaab gussa nahi, sabar aur strategy hai — patience is the greatest weapon."
-
-PARTS = [
-    {
-        "part": 1, "slug": "pratibha",
-        "beat": (
-            "Azure Heaven Pavilion's most gifted disciple CHEN YIRANG (चेन यिरांग), 19, wins the Celestial Trials, "
-            "catches the mentor MASTER QIANMO's (मास्टर कियानमो) secret: the sect hierarchy crushes талант for clan politics. "
-            "His fiancée लेयूया seems glowing, his best friend बैतुआन loyal, his elder brother चेन लूहांग jealous. "
-            "Set the city BAOLINGHE (बोलिंगहे) with neon crime towers, sect tower, rain, market noise. "
-            "Yirang is naive-honest, believes in the system. Show the festival, the banners, the tests. End part 1 with him hearing a whisper: 'The Trials are not what they seem.'"
-        ),
-    },
-    {
-        "part": 2, "slug": "vishwasghat",
-        "beat": (
-            "The Betrayal Night. The final trial on Thunder Crag during the storm. Elder brother Luhang (लूहांग) cuts the rope during the ascension climb; "
-            "mentor Qianmo watches and says nothing; best friend बैतुआन holds the gate and refuses to help; fiancée लेयूया runs to the brother's side. "
-            "Yirang plummets into the river/cliff, presumed dead. Qianmo orders silence. The sect announces 'a tragic accident'. "
-            "Flashbacks of earlier promises make the pain sharper. End: his body broken, he opens his eyes to red lanterns in the rain: the SECOND CITY below."
-        ),
-    },
-    {
-        "part": 3, "slug": "chhayayon",
-        "beat": (
-            "The underworld city Baolinghe. Found by the OBSIDIAN FANG syndicate (ऑब्सीडियन फेंग) and its kingpin KUWEN DAMUN (कुवेन दामून), a dying crime emperor, "
-            "who runs a shadow auction: information, blackmail, disappeared men. Yirang apprenticeship: ledgers, ciphers, surveillance, silence, interrogation, tasting fear. "
-            "He gains back his body + mind, sees how clean the sect looks from outside vs the rot beneath. "
-            "He finds his own name in an auction record: sold as 'asset #041' by his own sect. He does not rage; he laughs softly - the pivot moment. End: 'अब पूरा खेल मेरे rules पर चलेगा।'"
-        ),
-    },
-    {
-        "part": 4, "slug": "badla1",
-        "beat": (
-            "Part 4 - RETURN and THE BROTHER'S FALL. Under a new face/name, Yirang the Shadow King moves into Baolinghe's elite circles; buys his brother Luhang's debts; engineers his promotion ceremony to blow up on live display "
-            "(leaked forged evidence: the rope, the bribed judge, the audio of the storm night). Crowd mood flips. Luhang spends the night in the same cells he put Yirang in. Thriller beats: chase in the rain, a calm negotiation vs a panic, the silent smile, the reveal. "
-            "Yirang shows mercy ONLY as strategy: he makes Luhang sign the entire secret ledger rather than kill him. End part 4: brother's hands tremble as he signs."
-        ),
-    },
-    {
-        "part": 5, "slug": "master_girvat",
-        "beat": (
-            "Part 5 - THE MENTOR'S COLLAPSE. Qianmo senses danger, travels to Baolinghe undercover, meets the new 'Shadow King' unknowing of who he is. "
-            "Yirang plays chess/cold hospitality: tells him stories of fallen sects. Twist reveal: Qianmo's ownHidden slave-ledger (asset contracts, #041) is presented to the court as 'unknown evidence'. "
-            "Qianmo's students turn; the verdict happens at the Pavilion's 900th anniversary ceremony on stage - the mentor bows and never rises again (metaphorically buried: publicly stripped). "
-            "Thriller beats: the mask of reverence, the smile, the ledger on a silver plate, the silence in the hall. End: Yirang walks out as the crowd whispers 'Shadow King.'"
-        ),
-    },
-    {
-        "part": 6, "slug": "dost_prem",
-        "beat": (
-            "Part 6 - THE FRIEND AND THE FIANCEE. बैतुआन, the guilt-eaten gatekeeper, is offered a 'ticket out' to exile; he exposes EVERYTHING in exchange. "
-            "Fiancée लेयूया comes begging, pretending love; Yirang replays her storm-night words in a recorded auction of memory; she understands she sold him for a seat at the sect table; she is ruined publicly not by violence but by truth. "
-            "Yirang offers one chance: confess on court, name everyone. She chooses silence - and he lets the world do the rest. "
-            "Beat: the auction hall of truth, the crowd's faces, the soft delivery of the final line: 'मैं जीतने नहीं आया ... मैं पूरा खेल दिखाने आया हूँ।' End: the city empties before his one signal."
-        ),
-    },
-    {
-        "part": 7, "slug": "hidden_throne",
-        "beat": (
-            "Part 7 - THE HIDDEN THRONE AND THE WORLD FLIP. The final reveal: the betrayals were orchestrated by the EMPEROR'S secret cabal 'Hidden Throne' (हिडन थ्रोन) which runs the Pavilion as a beta-test lab for removing inconvenient geniuses. "
-            "Yirang, with Obsidian Fang's 200 shadow agents and Qianmo's ledger, doesn't storm any palace - he leaks EVERYTHING simultaneously: every court, every guild, every sect, every ledger page - one night, one hour, one command. "
-            "The system collapses not by battle, but by exposure. KUWEN DAMUN dies satisfied in Yirang's arms: 'बेटा, सरकार... अब दुनिया तुम्हारा शहर है।' "
-            "Epilogue 2 years later: 'Silent Emperor' legend, shrine streets empty, festivals renamed. End with the moral, slowly, explicitly: betrayal ka jawaab sabar aur strategy hai - gussa nahi. Patience crushes everyone."
-        ),
-    },
-]
-
-DESCRIPTION = (
-    "आज की सबसे गहरी कहानी — एक लड़का जिसे भाइयों, मास्टर, दोस्त और हबीब सबने धोखा दिया, वो कभी वापस आया ही नहीं... "
-    "बल्कि एक परछाईं बन गया जिसने पूरे सिस्टम को धूल में मिला दिया। Betrayal → Silence → Strategy → Total Domination.\n\n"
-    "⚠️ This video features AI-generated visuals and AI narration.\n\n"
-    "Moral: Betrayal ka jawaab gussa nahi, sabar aur strategy hai.\n\n"
-    "Subscribe for a new recap EVERY DAY: https://www.youtube.com/@MotionDraftStudio\n\n"
-    "#HindiAnimationRecap #BetrayalRecap #ChineseAnimationRecapHindi #MotionDraftStudio #ThrillerHindi"
-)
-
-TAGS = [
-    "hindi recap", "betrayal recap", "chinese animation recap hindi", "thriller recap",
-    "motion draft studio", "revenge recap", "shady recap", "recap hindi", "animation recap hindi",
-    "xianxia hindi", "डोंघुआ recap", "motivation hindi",
-]
-
-IMAGE_PROMPTS = [
-    "chinese animation key visual, a 19 year old genius disciple on a mountain trial rope under lightning, red banners, xianxia cel art, cinematic, no text",
-    "chinese animation, azure heaven pavilion sect tower above clouds at dusk, dragon banners, xianxia cel art, dramatic lighting, no text",
-    "chinese animation, a festival in an ancient Chinese city at night with neon lanterns, bustling market, cel art, no text",
-    "chinese animation, close up of a letter with red seal wax, blood rain lighting, cinematic macro, no text",
-    "chinese animation, a storm on Thunder Crag, a disciple cutting a rope above a ravine, lightning, dramatic cel art, no text",
-    "chinese animation, a body falling against a stormy sky, one broken arm reaching upward, cinematic, no text",
-    "chinese animation, a boy wet in river grass under red lanterns opening his eyes, rain, cel art, cinematic, no text",
-    "chinese animation, an underworld auction hall with shaded booths and a big screen showing files, candles, no people, no text",
-    "chinese animation, a dying crime kingpin in an obsidian armor chair with a ledger in hand, smoke, cel art, no text",
-    "chinese animation, a young man training in an underground dojo with knives and cipher books, flickering light, no text",
-    "chinese animation, a grand banquet where an elder brother toasts a crowd, wine spills in slow motion, no text",
-    "chinese animation, a city skyline with neon crime towers and sect towers at night, rain, cinematic color, no text",
-    "chinese animation, a silent man in a long black coat walking through a wet crowd, everyone turning to look, cel art, no text",
-    "chinese animation, a promotion ceremony stage with a huge banner and spotlights, one boy standing perfectly still, cinematic, no text",
-    "chinese animation, a brother in shackles in a cell with blood-red light, sister screaming above, cel art, no text",
-    "chinese animation, a silver plate with an old black leather ledger on it held by a gloved hand, courtroom candles, no text",
-    "chinese animation, an old mentor's face crumbling as students turn around in a great hall, cel art, cinematic, no text",
-    "chinese animation, an auction hall where a beautiful woman sells a memory coin, candle shadows on the crowd, no text",
-    "chinese animation, a wedding table set for two with one seat burning to ash, cel art, cinematic, no text",
-    "chinese animation, a map of a city with red threads connecting towers like a conspiracy board, candle light, no text",
-    "chinese animation, a hidden throne room under the sect with chains and masks, fog, dark gold, no text",
-    "chinese animation, hundreds of papers flying out of a palace as every hologram goes red at once, cel art, no text",
-    "chinese animation, a dying kingpin at peace by a window overlooking neon city rain, a calm young man at his side, no text",
-    "chinese animation, an epilogue street where a shrine flower is left for a silent legend, festival lanterns, cel art, no text",
-    "chinese animation, a silhouette on a rooftop above a glowing burning throne, lightning behind, cinematic cel art, no text",
-    "chinese animation, the same prayer bead broken at the trial now hanging in a shadow king's study, macro, no text",
-    "chinese animation, a young man teaching a boy the same mountain climb, dawn, hope, cel art, no text",
-    "chinese animation, an empty throne with a single red lantern burning, the storm long gone, cel art, no text",
-    "chinese animation, whispers in a rainy market where papers spread a legend, no text",
-    "chinese animation, a final wide skyline where two towers bow to each other's lights, calm, cinematic, no text",
-    "chinese animation, the word 'patience' as a glowing mantra behind closed eyes, dreamlike cel art, no text",
-    "chinese animation, black coat silhouette walking away into market crowd, lanterns rise, no text",
-]
-
-THUMB_PROMPT = (
-    "youtube thumbnail, cinematic chinese animation style, close-up of a young man soaked in rain with one glowing amber eye, "
-    "broken prayer bead in his fist, red lantern light from below, world-ending mood, dramatic lighting, no text"
-)
+from mega_variants import VARIANTS
+C = VARIANTS.get(MEGA_VARIANT, VARIANTS["M001"])
+TITLE = C["TITLE"]
+MORAL = C["MORAL"]
+CONTEXT = C["CONTEXT"]
+PARTS = C["PARTS"]
+DESCRIPTION = C["DESCRIPTION"]
+TAGS = C["TAGS"]
+IMAGE_PROMPTS = C["IMAGE_PROMPTS"]
+THUMB_PROMPT = C["THUMB_PROMPT"]
 
 PART_PROMPT_TMPL = """Write भाग {part} of 7 of the Devanagari-Hindi mega recap script.
 
 CONTEXT OF THE FULL STORY (do not repeat previous parts; continue exactly):
-Hero: CHEN YIRANG (चेन यिरांग), 19-year-old genius, betrayed on the mountain trial by elder brother चेन लूहांग, mentor मास्टर कियानमो, friend बैतुआन, fiancée लेयूया. Plunge, presumed dead. Rescued by Obsidian Fang syndicate under KUWEN DAMUN (कुवेन दामून). Trained as a shadow operative. Returns to Baolinghe as the silent "Shadow King". He methodically dismantles each betrayer with cold precision, then leaks the "Hidden Throne" cabal that runs the sect, bringing the entire system down by exposure, not war. Moral at the very end of part 7 only.
+{context}
 
 THIS PART ({part} of 7) - {slug}:
 {beat}
@@ -234,7 +122,7 @@ def _call_llm(model, label, user_prompt):
 
 def call_part(part_idx):
     meta = PARTS[part_idx - 1]
-    prompt = PART_PROMPT_TMPL.format(part=part_idx, slug=meta["slug"], beat=meta["beat"])
+    prompt = PART_PROMPT_TMPL.format(part=part_idx, slug=meta["slug"], beat=meta["beat"], context=CONTEXT)
     return _generate(prompt, label=f"part {part_idx}", min_words=1600, floor_accept=400)
 
 def _generate(prompt, label, min_words=1600, floor_accept=700):
@@ -379,7 +267,8 @@ def main():
         if dur >= 7200:
             break
         tail = " ".join(narration.split()[-700:])
-        ext_prompt = f"""You previously wrote a 7-part mega recap of the Chen Yirang betrayal story (Devanagari Hindi + English mix).
+        ext_prompt = f"""You previously wrote a 7-part mega recap titled '{TITLE}' (Devanagari Hindi + English mix).
+Story context: {CONTEXT}
 The story currently ENDS with this final paragraph:
 ...{tail}
 

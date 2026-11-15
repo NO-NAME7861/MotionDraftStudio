@@ -1,7 +1,14 @@
 name: Mega 2H Hindi Recap
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      variant:
+        description: "Story variant: M001 = betrayal thriller (CN), M002 = ronin samurai (JP), M003 = earthen god 20yr revenge (CN)"
+        required: true
+        default: M001
+        type: choice
+        options: ["M001", "M002", "M003"]
 
 permissions:
   contents: write
@@ -38,7 +45,7 @@ jobs:
           # (intentionally NOT using vars.OPENROUTER_MODEL here - it forces the 429ing model)
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-          MEGA_ID: M001
+          MEGA_VARIANT: ${{ inputs.variant || 'M001' }}
         run: python make_mega_video.py
 
       - name: Upload work artifacts
