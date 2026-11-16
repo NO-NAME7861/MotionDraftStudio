@@ -33,7 +33,7 @@ FALLBACK_MODELS    = [m for m in [
     "google/gemma-4-31b-it:free",
     "google/gemma-4-26b-a4b-it:free",
 ] ]
-VOICE              = os.environ.get("TTS_VOICE", "en-IN-NeerjaNeural")
+VOICE              = os.environ.get("TTS_VOICE", "en-IN-NeerjaExpressiveNeural")
 TTS_RATE           = os.environ.get("TTS_RATE", "-12%")  # slower, contemplative dramatic pace
 PRIVACY_STATUS     = os.environ.get("PRIVACY_STATUS", "private")  # safe default; set public when confident
 UPLOAD             = os.environ.get("UPLOAD", "1") == "1"
@@ -165,7 +165,7 @@ def call_llm(row):
  "description": "2-3 sentences hook + 1 line moral + line: This video features AI-generated visuals and AI narration. + subscribe CTA, max 1000 chars",
  "tags": ["max 15 tags"],
  "moral": "one sentence",
- "narration": "5500-6500 words continuous narration in a Hindi-Urdu-English mixed Devanagari script (Hindi sentence structure with English technical words like 'strategy', 'system', 'hidden', 'auction', 'decision'; some Urdu-origin words are acceptable). Natural SPOKEN style, easy for one Indian voice (hi-IN-SwaraNeural) to read aloud. ABSOLUTE MINIMUM 5200 words, NEVER fewer. Structure it in 14-18 scenes with slow pacing, dramatic peaks, quiet contemplation, and emotional beats. Every scene should land emotionally. MUST end with the explicit moral.",
+ "narration": "5500-6500 words continuous narration, written in a Roman Urdu + English + Hindi mixed style (native-written Roman Urdu sentences with English/Hindi verb phrases — like popular Pakistani YouTube storytelling: 'agar aap ne suno to...', 'wo larki sach mein hero ban gyi'). Suited for one warm female voice. Devanagari script NOT used. ABSOLUTE MINIMUM 5200 words, NEVER fewer. Structure it in 14-18 scenes with slow pacing, dramatic peaks, quiet contemplation, and emotional beats. Every scene should land emotionally. MUST end with the explicit moral.",
  "image_prompts": ["20 SHORT prompts, each: {style_req}, cinematic, dramatic lighting, <scene description>"],
  "thumbnail_prompt": "one dramatic prompt for a 16:9 thumbnail in {thumbnail_desc}"
 }}

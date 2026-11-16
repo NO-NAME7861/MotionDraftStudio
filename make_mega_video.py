@@ -1,7 +1,8 @@
 """
 make_mega_video.py - the 2+ HOUR Devanagari-Hindi "Betrayal -> Silent Thriller King" mega recap.
 Improved Long Dialogue Mode: 7 part-LLM calls (continuity via beats + previous-part tail),
-Hindi (Devanagari) + English mixed narration, hi-IN-SwaraNeural voice, 32 images, BGM.
+multi-sentence /
+        Roman Urdu + English + Hindi narration, en-IN-NeerjaExpressiveNeural voice, 32 images, BGM.
 
 Runs inside GitHub Actions (mega.yml). Also runnable locally:  python make_mega_video.py
 """
@@ -15,7 +16,7 @@ OUT  = ROOT / "mega-out"
 OUT.mkdir(parents=True, exist_ok=True)
 
 W, H, FPS = 1024, 576, 25
-VOICE = "hi-IN-SwaraNeural"
+VOICE = "en-IN-NeerjaExpressiveNeural"
 RATE  = os.environ.get("MEGA_RATE", "-2%")  # e.g. -25% slows ~1.33x for epic Devanagari pacing
 N_IMAGES = 32
 MEGA_VARIANT = os.environ.get("MEGA_VARIANT", "M001")
@@ -55,8 +56,8 @@ THIS PART ({part} of 7) - {slug}:
 {beat}
 
 Requirements:
-- DEEP narration in Devanagari Hindi mixed with ENGLISH technical words (like 'betrayal', 'strategy', 'hidden ledger', 'auction', 'system') - exactly the Hindi-English mix Indians love.
-- NEVER use double quotes or backslashes inside the narration text. Use Hindi quotes 「 」 or single quotes ' for dialogue instead - keep valid JSON.
+- DEEP narration in Roman Urdu + English + Hindi mixed style (native idiomatic sentences, like Pakistani YouTube, e.g. 'agar aap samajh rahe hain to...', 'woh larki sach mein hero ban gyi'). Use Devanagari NOWHERE. Use English technical words freely.
+- NEVER use double quotes or backslashes inside the narration text. Use Hindi quotes 「 」 or single quotes ' for dialogue instead - keep valid JSON. Keep Roman Urdu mostly; English code-switching allowed freely.
 - Target 2100-2400 words. DO NOT write less than 2000 words. Slow pace, heavy suspense.
 - Natural spoken style for one voice. Long, flowing sentences mixed with punchy short ones.
 - Include dialogue (use Hindi quote style), inner monologue, sensory detail (rain, lantern light, heartbeat, paper, metal).

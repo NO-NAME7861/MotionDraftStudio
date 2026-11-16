@@ -62,7 +62,7 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: "nvidia/nemotron-3-ultra-550b-a55b:free"  # repo var forces 429-dead gemma; ultra actually answers
-          TTS_VOICE: 'hi-IN-SwaraNeural'  # Hindi-Urdu-English mixed narration
+          TTS_VOICE: 'en-IN-NeerjaExpressiveNeural'  # Roman Urdu/Hindi/English mix, warm expressive female
           PRIVACY_STATUS: ${{ inputs.privacy || vars.PRIVACY_STATUS || 'public' }}
           EPISODES_CSV: ${{ inputs.episodes_csv || vars.EPISODES_CSV || 'episodes_100.csv' }}
           STYLE: ${{ inputs.style || vars.STYLE || 'japanese' }}

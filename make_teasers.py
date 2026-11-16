@@ -19,7 +19,7 @@ OUT = ROOT / "shorts-out"
 OUT.mkdir(exist_ok=True)
 
 W_, H_, FPS = 1024, 576, 25
-VOICE = "hi-IN-SwaraNeural"
+VOICE = "en-IN-NeerjaExpressiveNeural"
 
 TEASERS = [
     {
@@ -116,6 +116,96 @@ TEASERS = [
             "दो घंटे की पूरी कहानी, अभी देखना।"
         ),
         "seed": 8105,
+    },
+    {
+        "id": "T6",
+        "hook_prompts": [
+            "chinese animation, xianxia key visual, a very small child on a village altar under a striking moon, chained arms, no text",
+            "chinese animation, a village crowd gathered with torches to watch a ritual at the altar, cel art, no text",
+            "chinese animation, a young girl on the altar with closed eyes refusing to fear, cel art, dramatic, no text",
+            "chinese animation, the altar cracking under her heel, red lightning bursting out, cel art, no text",
+            "chinese animation, a hidden puppet master in the shadows losing control, cel art, no text",
+            "chinese animation, the girl walking away from the burning altar, village crawling at her feet, cinematic, no text",
+        ],
+        "narration": (
+            "हर माँ-बाप ने सब छोड़ दिया, जब उस सत्र में उसे कुर्बान करने की घोषणा हुई। "
+            "नौ साल की बच्ची, लाल चादर, और एक ऐसा पूजा जिसका नाम किसी ने नहीं सुना था। "
+            "लेकिन जब ज्वाला फूटती है, तो जो सबसे मरता है वो पूजा करने वाला होता है। "
+            "इस बच्ची की असली शक्ति आसमान की नहीं थी — पर उस रात पूरा गांव बाकी था।"
+        ),
+        "seed": 8206,
+    },
+    {
+        "id": "T7",
+        "hook_prompts": [
+            "chinese animation, xianxia key visual, an old master training a very small child on a rainy mountain, cel art, no text",
+            "chinese animation, a child carrying huge sword on his back past an empty temple gate, cel art, no text",
+            "chinese animation, a single silhouette on a cloud platform facing a hall of immortal judges, cel art, no text",
+            "chinese animation, a child crying over his mother's grave wrapped in leaves, cel art, no text",
+            "chinese animation, the child breaking a stone tablet in front of everyone saying enough, cel art, no text",
+            "chinese animation, a young man standing where his master used to stand, cel art, no text",
+        ],
+        "narration": (
+            "जो बच्चा सबको बलि माना, उसका मास्टर कुर्सियां जाता था। "
+            "सुगन्ध और धर्म, चीन के चीज़ और पूजा — उस बच्चे ने सब झेला। "
+            "लेकिन कमजोर का कोई सिपही नहीं। जो सब कहता है, वह सब बदलता है। "
+            "उस बच्चे ने मास्टर की हत्या पहले से देखी। नाम पर चोट, वही उसका सबसे बड़ा आशीर्वाद था।"
+        ),
+        "seed": 8207,
+    },
+    {
+        "id": "T8",
+        "hook_prompts": [
+            "chinese animation, xianxia key visual, an emperor signing a poison decree late at night, no one else awake, cel art, no text",
+            "chinese animation, a disciple collapsing at dinner screaming from a poisoned wine cup, cel art, no text",
+            "chinese animation, the emperor's personal physician running with herb satchels, cel art, no text",
+            "chinese animation, the disciple's hand reaching for a piece of paper slipped from the emperor's sleeve, cel art, no text",
+            "chinese animation, a secret archive beneath the palace stairs filled with fire-clay records, cel art, no text",
+            "chinese animation, the disciple standing in the throne room with his palm inked in blood, no text",
+        ],
+        "narration": (
+            "महाराज ने सबसे पहले अपने ही शिष्य को चखा। "
+            "यह खून है, यह शराब है, यह एक है आम? लोग नहीं देख सकते थे। महारानी भी नहीं। "
+            "लेकिन एक शिष्य अभी भी जिंदा था — और उसने अपनी मौत से पहले वह काग़ज़ छिपा दिया। "
+            "अब महारत उसे ढूढ़ता है। और कोई नहीं बचा है।"
+        ),
+        "seed": 8208,
+    },
+    {
+        "id": "T9",
+        "hook_prompts": [
+            "chinese animation, xianxia key visual, a mountain that never spoke to humans, fog on its shoulders, cel art, no text",
+            "chinese animation, an old man walking on bamboo sticks to talk with the mountain, cel art, no text",
+            "chinese animation, a young sword cultivator kneeling at dawn, hearing the mountain in silence, cel art, no text",
+            "chinese animation, the mountain splitting open on a storm night, a breathing eye opening, cel art, no text",
+            "chinese animation, a village below the mountain staring up, people whispering, cel art, no text",
+            "chinese animation, the old man bowing deeply to the mountain spirit alone, cel art, no text",
+        ],
+        "narration": (
+            "पर्वत बोला — बहुत कम। केवल एक आदमी को सुना। "
+            "पुराने शिष्य से भी। महाराज से भी नहीं। जिन्नवो से भी नहीं। "
+            "वह पर्वत जो सदियों से रक्षण में था, से बाहर निकल आया। "
+            "सुआसी का सवाल है। किसके लिए बोल रहा है?"
+        ),
+        "seed": 8209,
+    },
+    {
+        "id": "T10",
+        "hook_prompts": [
+            "chinese animation, xianxia key visual, a master on his deathbed, his favorite disciple at his side crying, cel art, no text",
+            "chinese animation, the master gripping the disciple's collar saying the last words, cel art, no text",
+            "chinese animation, the disciple's face after the master dies, emotionless, cel art, no text",
+            "chinese animation, a scroll sealed with red thread in the master's room, no text",
+            "chinese animation, the disciple opening the scroll to find the master's real contract, no text",
+            "chinese animation, the disciple burning the contract at sunrise, walking away silently, cel art, no text",
+        ],
+        "narration": (
+            "महाराज कह रहा था दिल पर भरोसा मत करो। "
+            "लेकिन कोई नहीं जानता था — यह सब उसने देखभाल के एक हिस्सा में काम करता था। "
+            "उसने अपने ही शिष्य को मूर्ख बना दिया था अपने जिन्दगी। "
+            "अब, उसकी मौत के बाद, वही मूर्ख अपना असली नाम जान रहा है।"
+        ),
+        "seed": 8210,
     },
 ]
 
