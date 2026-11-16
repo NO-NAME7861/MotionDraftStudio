@@ -59,6 +59,7 @@ jobs:
 
       - name: Build and upload Re:Zero explainer
         env:
+          TTS_VOICE: "ur-PK-UzmaNeural"
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: "nvidia/nemotron-3-ultra-550b-a55b:free"
           EPISODES_CSV: episodes_rezero.csv
