@@ -24,14 +24,14 @@ STYLE = os.environ.get("STYLE", "japanese").strip().lower()
 WORK.mkdir(exist_ok=True)
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "").strip()
-OPENROUTER_MODEL   = os.environ.get("OPENROUTER_MODEL", "google/gemma-4-31b-it:free")
+OPENROUTER_MODEL   = os.environ.get("OPENROUTER_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free")
 CF_ACCOUNT_ID      = os.environ.get("CF_ACCOUNT_ID", "").strip()
 CF_API_TOKEN       = os.environ.get("CF_API_TOKEN", "").strip()
 FALLBACK_MODELS    = [m for m in [
-    "google/gemma-4-31b-it:free",
-    "google/gemma-4-26b-a4b-it:free",
     "nvidia/nemotron-3-ultra-550b-a55b:free",
     "nvidia/nemotron-3.5-lightning:free",
+    "google/gemma-4-31b-it:free",
+    "google/gemma-4-26b-a4b-it:free",
 ] ]
 VOICE              = os.environ.get("TTS_VOICE", "en-IN-NeerjaNeural")
 TTS_RATE           = os.environ.get("TTS_RATE", "-12%")  # slower, contemplative dramatic pace
