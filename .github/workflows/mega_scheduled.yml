@@ -25,8 +25,9 @@ jobs:
       - name: Install system deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-liberation fonts-noto-devanagari fonts-noto-core fonts-freefont-ttf fontconfig
+          sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-liberation fonts-indic fontconfig
           sudo fc-cache -f
+          fc-list :lang=hi family
 
       - name: Install Python deps
         run: pip install -r requirements.txt
