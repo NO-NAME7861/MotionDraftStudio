@@ -16,7 +16,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 W, H, FPS = 1024, 576, 25
 VOICE = "hi-IN-SwaraNeural"
-RATE  = "-2%"
+RATE  = os.environ.get("MEGA_RATE", "-2%")  # e.g. -25% slows ~1.33x for epic Devanagari pacing
 N_IMAGES = 32
 MEGA_VARIANT = os.environ.get("MEGA_VARIANT", "M001")
 EPISODE_ID = MEGA_VARIANT
@@ -288,12 +288,16 @@ Now you MUST extend the same story WITHOUT repeating previous scenes: write a de
 - Never summarize. Keep pace slow, tension high, absolutely no scenes from before the current ending.
 
 Return ONLY JSON: {{"part": 8, "narration": "..."}}"""
-        extra = _generate(ext_prompt, f"extension {ext + 1}", min_words=2000, floor_accept=800)
+        try:
+            extra = _generate(ext_prompt, f"extension {ext + 1}", min_words=2000, floor_accept=800)
+        except SystemExit as e:
+            log(f"extension LLM failed ({e}); keeping narration at {total_words} words")
+            break
         narration = narration.rstrip() + "\n\n" + extra.strip()
         total_words = len(narration.split())
         log(f"after extension: {total_words} words")
-    else:
-        log("WARNING: after 4 extensions video is still under 2h")
+    if media_duration(mp3_probe) < 7200:
+        log(f"WARNING: video still under 2h ({media_duration(mp3_probe):.1f}s) - uploading anyway")
 
     log("=== IMAGES (32) ===")
     image_paths, seed0 = [], random.randint(1000, 999999)
@@ -338,7 +342,7 @@ Return ONLY JSON: {{"part": 8, "narration": "..."}}"""
                     "-c", "copy", str(concat)],
                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    sub_style = ("FontName=Noto Sans Devanagari,FontSize=17,Bold=-1,"
+    sub_style = ("FontName=Lohit Devanagari,FontSize=17,Bold=-1,"
                  "PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=4,Outline=2,Shadow=0,MarginV=24")
     out_mp4 = OUT / f"mega_{EPISODE_ID}.mp4"
     subprocess.run(["ffmpeg", "-y", "-i", str(concat), "-i", str(mixed),
