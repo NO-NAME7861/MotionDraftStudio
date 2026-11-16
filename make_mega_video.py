@@ -342,7 +342,7 @@ Return ONLY JSON: {{"part": 8, "narration": "..."}}"""
                     "-c", "copy", str(concat)],
                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    sub_style = ("FontName=Lohit Devanagari,FontSize=17,Bold=-1,"
+    sub_style = ("FontName=Sans,FontSize=17,Bold=-1,"
                  "PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=4,Outline=2,Shadow=0,MarginV=24")
     out_mp4 = OUT / f"mega_{EPISODE_ID}.mp4"
     subprocess.run(["ffmpeg", "-y", "-i", str(concat), "-i", str(mixed),
