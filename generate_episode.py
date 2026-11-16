@@ -165,7 +165,7 @@ def call_llm(row):
  "description": "2-3 sentences hook + 1 line moral + line: This video features AI-generated visuals and AI narration. + subscribe CTA, max 1000 chars",
  "tags": ["max 15 tags"],
  "moral": "one sentence",
- "narration": "5500-6500 words continuous narration, natural spoken English, vivid, dramatic, easy for one voice to read. ABSOLUTE MINIMUM 5200 words, NEVER fewer. Structure it in 14-18 scenes with slow pacing, dramatic peaks, quiet contemplation, and emotional beats. Every scene should land emotionally. MUST end with the explicit moral.",
+ "narration": "5500-6500 words continuous narration in a Hindi-Urdu-English mixed Devanagari script (Hindi sentence structure with English technical words like 'strategy', 'system', 'hidden', 'auction', 'decision'; some Urdu-origin words are acceptable). Natural SPOKEN style, easy for one Indian voice (hi-IN-SwaraNeural) to read aloud. ABSOLUTE MINIMUM 5200 words, NEVER fewer. Structure it in 14-18 scenes with slow pacing, dramatic peaks, quiet contemplation, and emotional beats. Every scene should land emotionally. MUST end with the explicit moral.",
  "image_prompts": ["20 SHORT prompts, each: {style_req}, cinematic, dramatic lighting, <scene description>"],
  "thumbnail_prompt": "one dramatic prompt for a 16:9 thumbnail in {thumbnail_desc}"
 }}
@@ -337,7 +337,7 @@ def build_video(image_paths, audio, srt, out_mp4, thumb):
                     "-c", "copy", str(concat)], check=True,
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    sub_style = ("FontName=Arial,FontSize=16,Bold=-1,PrimaryColour=&H00FFFFFF,"
+    sub_style = ("FontName=Noto Sans Devanagari,FontSize=16,Bold=-1,PrimaryColour=&H00FFFFFF,"
                  "OutlineColour=&H00000000,BorderStyle=4,Outline=2,Shadow=0,MarginV=22")
     subprocess.run(["ffmpeg", "-y", "-i", str(concat), "-i", str(audio),
                     "-vf", f"subtitles={srt.as_posix()}:force_style='{sub_style}'",

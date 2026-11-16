@@ -47,7 +47,7 @@ jobs:
       - name: Install system deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-liberation
+          sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-liberation fonts-noto-core
 
       - name: Install Python deps
         run: pip install -r requirements.txt
@@ -61,7 +61,7 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: "nvidia/nemotron-3-ultra-550b-a55b:free"  # repo var forces 429-dead gemma; ultra actually answers
-          TTS_VOICE: ${{ vars.TTS_VOICE || 'en-US-JennyNeural' }}
+          TTS_VOICE: 'hi-IN-SwaraNeural'  # Hindi-Urdu-English mixed narration
           PRIVACY_STATUS: ${{ inputs.privacy || vars.PRIVACY_STATUS || 'public' }}
           EPISODES_CSV: ${{ inputs.episodes_csv || vars.EPISODES_CSV || 'episodes_100.csv' }}
           STYLE: ${{ inputs.style || vars.STYLE || 'japanese' }}
