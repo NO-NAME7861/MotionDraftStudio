@@ -2,7 +2,7 @@
 make_mega_video.py - the 2+ HOUR Devanagari-Hindi "Betrayal -> Silent Thriller King" mega recap.
 Improved Long Dialogue Mode: 7 part-LLM calls (continuity via beats + previous-part tail),
 multi-sentence /
-        Roman Urdu + English + Hindi narration, ur-PK-UzmaNeural voice, 32 images, BGM.
+        Roman Urdu + English + Hindi narration, en-IN-NeerjaExpressiveNeural voice, 32 images, BGM.
 
 Runs inside GitHub Actions (mega.yml). Also runnable locally:  python make_mega_video.py
 """
@@ -16,7 +16,7 @@ OUT  = ROOT / "mega-out"
 OUT.mkdir(parents=True, exist_ok=True)
 
 W, H, FPS = 1024, 576, 25
-VOICE = "ur-PK-UzmaNeural"
+VOICE = "en-IN-NeerjaExpressiveNeural"
 RATE  = os.environ.get("MEGA_RATE", "-2%")  # e.g. -25% slows ~1.33x for epic Devanagari pacing
 N_IMAGES = 32
 MEGA_VARIANT = os.environ.get("MEGA_VARIANT", "M001")
