@@ -2,7 +2,7 @@
 make_mega_video.py - the 2+ HOUR Devanagari-Hindi "Betrayal -> Silent Thriller King" mega recap.
 Improved Long Dialogue Mode: 7 part-LLM calls (continuity via beats + previous-part tail),
 multi-sentence /
-        Roman Urdu + English + Hindi narration, en-IN-NeerjaExpressiveNeural voice, 32 images, BGM.
+        Roman Urdu + English + Hindi narration, ur-PK-UzmaNeural voice, 32 images, BGM.
 
 Runs inside GitHub Actions (mega.yml). Also runnable locally:  python make_mega_video.py
 """
@@ -16,7 +16,7 @@ OUT  = ROOT / "mega-out"
 OUT.mkdir(parents=True, exist_ok=True)
 
 W, H, FPS = 1024, 576, 25
-VOICE = "en-IN-NeerjaExpressiveNeural"
+VOICE = "ur-PK-UzmaNeural"
 RATE  = os.environ.get("MEGA_RATE", "-2%")  # e.g. -25% slows ~1.33x for epic Devanagari pacing
 N_IMAGES = 32
 MEGA_VARIANT = os.environ.get("MEGA_VARIANT", "M001")
@@ -343,14 +343,12 @@ Return ONLY JSON: {{"part": 8, "narration": "..."}}"""
                     "-c", "copy", str(concat)],
                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    sub_style = ("FontName=Sans,FontSize=17,Bold=-1,"
-                 "PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=4,Outline=2,Shadow=0,MarginV=24")
     out_mp4 = OUT / f"mega_{EPISODE_ID}.mp4"
-    subprocess.run(["ffmpeg", "-y", "-i", str(concat), "-i", str(mixed),
-                    "-vf", f"subtitles={srt.as_posix()}:force_style='{sub_style}'",
-                    "-c:v", "libx264", "-preset", "ultrafast", "-crf", "27",
-                    "-c:a", "aac", "-b:a", "128k", "-shortest", str(out_mp4)],
-                   check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    cmd = ["ffmpeg", "-y", "-i", str(concat), "-i", str(mixed)]
+    # Skip subtitles entirely — libass fails on many runners; captions can be added later in Studio
+    cmd += ["-c:v", "libx264", "-preset", "ultrafast", "-crf", "27",
+            "-c:a", "aac", "-b:a", "128k", "-shortest", str(out_mp4)]
+    subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     log("video ready:", out_mp4)
 
     from google.oauth2.credentials import Credentials
