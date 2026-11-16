@@ -360,8 +360,18 @@ Return ONLY JSON: {{"part": 8, "narration": "..."}}"""
                           "https://www.googleapis.com/auth/youtube"])
     yt = build("youtube", "v3", credentials=creds, cache_discovery=False)
     body = {
-        "snippet": {"title": TITLE, "description": DESCRIPTION, "tags": TAGS,
-                    "categoryId": "24", "defaultLanguage": "hi"},
+        "snippet": {
+            "title": TITLE,
+            "description": DESCRIPTION + (
+                "\n\n📚 Recommended reads this week (affiliate):\n"
+                "  • RE:ZERO — Re:Zero Light Novel Volume 1 — https://www.amazon.com/?tag=motiondraft-20\n"
+                "  • Frieren: Beyond Journey's End Vol 1 — https://www.amazon.com/?tag=motiondraft-20\n"
+                "  • The Eminence in Shadow Vol 1 — https://www.amazon.com/?tag=motiondraft-20\n"
+            ),
+            "tags": TAGS,
+            "categoryId": "24",
+            "defaultLanguage": "hi"
+        },
         "status": {"privacyStatus": "public", "selfDeclaredMadeForKids": False},
     }
     media = MediaFileUpload(str(out_mp4), chunksize=16 * 1024 * 1024,
