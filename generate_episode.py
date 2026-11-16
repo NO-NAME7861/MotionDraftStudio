@@ -271,7 +271,7 @@ def gen_image(prompt, dest, seed):
 # ---------------------------------------------------------------- 3. voice
 
 def run_tts(text_file, mp3, srt):
-    cmd = [sys.executable, "-m", "edge_tts", "--file", str(text_file),
+    cmd = [sys.executable, "edge_tts_shim.py", "--file", str(text_file),
            "--write-media", str(mp3), "--write-subtitles", str(srt),
            "--voice", VOICE, f"--rate={TTS_RATE}"]
     subprocess.run(cmd, check=True)

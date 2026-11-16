@@ -268,7 +268,7 @@ def cf_image(prompt, out, seed):
     return False
 
 def run_tts(text_file, mp3, voice="en-IN-NeerjaExpressiveNeural"):
-    subprocess.run([sys.executable, "-m", "edge_tts", "--file", str(text_file),
+    subprocess.run([sys.executable, "edge_tts_shim.py", "--file", str(text_file),
                     "--write-media", str(mp3), "--voice", voice], check=True)
 
 def build_short(s):

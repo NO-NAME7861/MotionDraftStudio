@@ -270,7 +270,7 @@ def build_teaser(t):
     txt = d / "narration.txt"
     txt.write_text(t["narration"], encoding="utf-8")
     mp3 = d / "narration.mp3"
-    subprocess.run([sys.executable, "-m", "edge_tts", "--file", str(txt),
+    subprocess.run([sys.executable, "edge_tts_shim.py", "--file", str(txt),
                     "--write-media", str(mp3), "--voice", VOICE], check=True)
     dur = float(subprocess.run([
         "ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(mp3)],

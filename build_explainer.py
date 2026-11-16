@@ -226,7 +226,7 @@ def main():
     seed0 = seed0 + 1000
 
     mp3, srt = WORK / "narration.mp3", WORK / "narration.srt"
-    subprocess.run([sys.executable, "-m", "edge_tts",
+    subprocess.run([sys.executable, "edge_tts_shim.py",
                     "--file", str(txt), "--write-media", str(mp3),
                     "--write-subtitles", str(srt),
                     "--voice", VOICE, f"--rate={RATE}"], check=True)

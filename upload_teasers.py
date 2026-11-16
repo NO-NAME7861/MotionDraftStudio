@@ -71,6 +71,56 @@ META = [
             "#Shorts #MotionDraftShorts #ChineseAnimationRecapHindi #MotionDraftStudio"
         ),
     },
+    {
+        "file": "T6.mp4",
+        "title": "हर माँ ने छोड़ा — पर बच्ची की असली शक्ति #Shorts",
+        "description": (
+            "नौ साल की बच्ची, एक ऐसी पूजा — जो किसी ने नहीं जानी।\n\n"
+            "पूरा सीन देखिए — {mega_link}\n\n"
+            "⚠️ AI-generated visuals and AI narration.\n\n"
+            "#Shorts #MotionDraftShorts #ChineseAnimationRecapHindi #MotionDraftStudio"
+        ),
+    },
+    {
+        "file": "T7.mp4",
+        "title": "जो बच्चा सबको बलि माना — वो सबसे बड़ा #Shorts",
+        "description": (
+            "सब उसको कमजोर समझते थे — पर उसने मास्टर की हत्या पहले से देखी थी।\n\n"
+            "पूरा सीन — {mega_link}\n\n"
+            "⚠️ AI-generated visuals and AI narration.\n\n"
+            "#Shorts #MotionDraftShorts #ChineseAnimationRecapHindi #MotionDraftStudio"
+        ),
+    },
+    {
+        "file": "T8.mp4",
+        "title": "महाराज ने सबसे पहले अपने शिष्य को चखा #Shorts",
+        "description": (
+            "यह खून है, यह शराब है — कौन जानता था महाराज ने किसको चखा।\n\n"
+            "पूरी कहानी — {mega_link}\n\n"
+            "⚠️ AI-generated visuals and AI narration.\n\n"
+            "#Shorts #MotionDraftShorts #ChineseAnimationRecapHindi #MotionDraftStudio"
+        ),
+    },
+    {
+        "file": "T9.mp4",
+        "title": "पर्वत बोला — पर केवल एक आदमी सुन पाया #Shorts",
+        "description": (
+            "पर्वत बोला — जिन्नवो भी नहीं, महाराज भी नहीं। केवल एक।\n\n"
+            "पूरा सीन — {mega_link}\n\n"
+            "⚠️ AI-generated visuals and AI narration.\n\n"
+            "#Shorts #MotionDraftShorts #ChineseAnimationRecapHindi #MotionDraftStudio"
+        ),
+    },
+    {
+        "file": "T10.mp4",
+        "title": "मास्टर की आखिरी सांस — असली contract #Shorts",
+        "description": (
+            "दिल पर भरोसा मत करो — मास्टर ने कहा। यह contract इसी की सच्चाई है।\n\n"
+            "पूरा सेट — {mega_link}\n\n"
+            "⚠️ AI-generated visuals and AI narration.\n\n"
+            "#Shorts #MotionDraftShorts #ChineseAnimationRecapHindi #MotionDraftStudio"
+        ),
+    },
 ]
 
 

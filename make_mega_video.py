@@ -265,7 +265,7 @@ def main():
     for ext in range(4):
         Path(WORK / "narration.txt").write_text(narration, encoding="utf-8")
         mp3_probe, srt_probe = WORK / "narration.mp3", WORK / "narration.srt"
-        subprocess.run([sys.executable, "-m", "edge_tts",
+        subprocess.run([sys.executable, "edge_tts_shim.py",
                         "--file", str(WORK / "narration.txt"), "--write-media", str(mp3_probe),
                         "--write-subtitles", str(srt_probe),
                         "--voice", VOICE, f"--rate={RATE}"], check=True)
