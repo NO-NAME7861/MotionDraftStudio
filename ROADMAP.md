@@ -15,6 +15,7 @@
 - First subscriber + tribute video (public thank-you) - https://youtu.be/xkqKR_cJF-w
 - Milestone tribute automation: tribute video at 50 / 100 / 500 / 1000 and every 5K thereafter (4h cron)
 - Shorts W7-W11 (5 new poll hooks) + auto-playlist routing
+- Re:Zero Explainer series launched (4-6 hr episodes daily at 00:30 UTC) — running nightly
 - 40-min episode target: >=5000-word narration enforced with expand-retry (ep14 came out 38:04)
 
 ## Next week (Week of 2026-11-16)
