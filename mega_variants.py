@@ -230,7 +230,7 @@ M002 = {
 }
 
 M003 = {
-    "TITLE": "Bai Ya's 20-Year Revenge — The Earthen God Who Ate The Celestial Throne [Chinese Animation Recap Hindi]",
+    "TITLE": "Bai Ya's 20-Year Revenge — The Earthen God Who Ate the Celestial Throne",
     "MORAL": "20 saal pressure cooker hai — sabse matlab hai inner maan maanega, sabar se sab kuch achieve hota hai.",
     "CONTEXT": (
         "Hero: BAI YA (बाई या), a 9-year-old village boy who dreams of the sword. His sister BAI LI (बाई ली) joins the HEAVENLY RIVER SECT (स्वर्ग नदी Sect) "
