@@ -1,8 +1,12 @@
 """
 edge_tts_shim.py - drop-in replacement for `python -m edge_tts ...`.
 
-Calls edge_tts as a subprocess first; on failure, falls back to gTTS (Google built-in).
-Used when Microsoft rate-limits GitHub Actions IPs.
+Calls edge_tts as a subprocess first; on failure (or on garbage output),
+falls back to gTTS (Google built-in).
+
+Why the sanity check: en-IN-NeerjaExpressiveNeural silently mangles Devanagari
+script (reads it at ~7 words/sec — mostly skipped text) with exit code 0.
+We verify pacing after edge_tts "succeeds" and fall back if unrealistic.
 
 Args (matches edge_tts API):
   --file FILE          text file to read
@@ -18,6 +22,18 @@ import pathlib
 import re
 import time
 
+MIN_SEC_PER_WORD = 0.20  # faster than ~5 words/sec = not real speech
+
+
+def media_duration(path):
+    out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                          "-of", "csv=p=0", str(path)],
+                         capture_output=True, text=True).stdout.strip()
+    try:
+        return float(out)
+    except ValueError:
+        return 0.0
+
 
 def edge_attempt(args):
     cmd = [sys.executable, "-m", "edge_tts",
@@ -32,9 +48,16 @@ def edge_attempt(args):
     return subprocess.run(cmd, capture_output=True, text=True)
 
 
+def script_lang(text):
+    dev = sum(1 for c in text if '\u0900' <= c <= '\u097f')
+    return "hi" if dev > len(text) * 0.05 else "en"
+
+
 def gtts_fallback(args):
     from gtts import gTTS
     text = pathlib.Path(args.file).read_text(encoding="utf-8")
+    lang = script_lang(text)
+    print(f"gTTS fallback: lang={lang} (auto-detected script)", flush=True)
     mp3_path = args.write_media
     words = text.split()
     chunks = []
@@ -52,7 +75,7 @@ def gtts_fallback(args):
         print(f"gtts chunk {i+1}/{len(chunks)} ({len(chunk)} chars)", flush=True)
         for attempt in range(3):
             try:
-                tts = gTTS(text=chunk, lang="hi", slow=False)
+                tts = gTTS(text=chunk, lang=lang, slow=False)
                 from io import BytesIO
                 buf = BytesIO(); tts.write_to_fp(buf); out += buf.getvalue(); break
             except Exception as e:
@@ -65,15 +88,12 @@ def gtts_fallback(args):
     if args.write_subtitles:
         # simple word-based SRT
         srt_path = args.write_subtitles
-        import math
-        words_total = len(words)
         # rough duration estimate 150 wpm
-        approx_secs = max(60, int(words_total / 2.5))
+        approx_secs = max(60, int(len(words) / 2.5))
         per_chunk = approx_secs / len(chunks)
         lines = []
         t = 0.0
         for i, chunk in enumerate(chunks):
-            wcount = len(chunk.split())
             dur = per_chunk
             lines.append(f"{i+1}\n"
                          f"{_hms(t)} --> {_hms(t + dur)}\n"
@@ -96,10 +116,18 @@ def main():
     args = p.parse_args()
     r = edge_attempt(args)
     print("edge-TTS exit:", r.returncode, r.stderr[-150:] if r.stderr else "")
-    if r.returncode == 0:
-        return
-    print("falling back to gTTS...")
+    if r.returncode == 0 and pathlib.Path(args.write_media).exists():
+        words = len(pathlib.Path(args.file).read_text(encoding="utf-8").split())
+        dur = media_duration(args.write_media)
+        spm = (dur / words) if words else 0
+        print(f"edge-TTS output: {dur:.1f}s for {words} words ({spm:.3f}s/word)")
+        if dur > 0 and spm >= MIN_SEC_PER_WORD:
+            return
+        print(f"WARNING: edge-TTS pacing unrealistic (< {MIN_SEC_PER_WORD}s/word) - treating as garbage, falling back to gTTS")
+    else:
+        print("edge-TTS failed - falling back to gTTS")
     gtts_fallback(args)
+
 
 if __name__ == "__main__":
     main()
