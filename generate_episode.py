@@ -165,7 +165,7 @@ def call_llm(row):
  "description": "2-3 sentences hook + 1 line moral + line: This video features AI-generated visuals and AI narration. + subscribe CTA, max 1000 chars",
  "tags": ["max 15 tags"],
  "moral": "one sentence",
- "narration": "5500-6500 words continuous narration, written in a Roman Urdu + English + Hindi mixed style (native-written Roman Urdu sentences with English/Hindi verb phrases — like popular Pakistani YouTube storytelling: 'agar aap ne suno to...', 'wo larki sach mein hero ban gyi'). Suited for one warm female voice. Devanagari script NOT used. ABSOLUTE MINIMUM 5200 words, NEVER fewer. Structure it in 14-18 scenes with slow pacing, dramatic peaks, quiet contemplation, and emotional beats. Every scene should land emotionally. MUST end with the explicit moral.",
+ "narration": "5500-6500 words continuous narration, written in a Roman Urdu + English + Hindi mixed style (native-written Roman Urdu sentences with English/Hindi verb phrases - like popular Pakistani YouTube storytelling: 'agar aap ne suno to...', 'wo larki sach mein hero ban gyi'). Suited for one warm female voice. Devanagari script NOT used. ABSOLUTE MINIMUM 5200 words, NEVER fewer. Structure it in 14-18 scenes with slow pacing, dramatic peaks, quiet contemplation, and emotional beats. Every scene should land emotionally. MUST end with the explicit moral.",
  "image_prompts": ["20 SHORT prompts, each: {style_req}, cinematic, dramatic lighting, <scene description>"],
  "thumbnail_prompt": "one dramatic prompt for a 16:9 thumbnail in {thumbnail_desc}"
 }}
@@ -362,14 +362,14 @@ def youtube_upload(ep, mp4, thumbnail):
 
     default_desc = ep["description"].rstrip()
     footer = (
-        "\n\n— Motion Draft Studio\n\n"
+        "\n\n- Motion Draft Studio\n\n"
         "?? Subscribe for daily recaps\n"
         "?? Chinese animation & Japanese 2D anime stories in English narration\n\n"
         "?? Recommended reads this week (affiliate):\n"
-        "  • RE:ZERO — Re:Zero Light Novel Volume 1 on Amazon — https://www.amazon.com/?tag=motiondraft-20\n"
-        "  • Frieren: Beyond Journey's End — Vol 1 — https://www.amazon.com/?tag=motiondraft-20\n"
-        "  • Mushoku Tensei — Isekai Anthology — https://www.amazon.com/?tag=motiondraft-20\n"
-        "  • The Eminence in Shadow — Vol 1 — https://www.amazon.com/?tag=motiondraft-20\n\n"
+        "  * RE:ZERO - Re:Zero Light Novel Volume 1 on Amazon - https://www.amazon.com/?tag=motiondraft-20\n"
+        "  * Frieren: Beyond Journey's End - Vol 1 - https://www.amazon.com/?tag=motiondraft-20\n"
+        "  * Mushoku Tensei - Isekai Anthology - https://www.amazon.com/?tag=motiondraft-20\n"
+        "  * The Eminence in Shadow - Vol 1 - https://www.amazon.com/?tag=motiondraft-20\n\n"
         "?? This video contains AI-generated visuals and an AI-generated voiceover.\n\n"
         "Playlist: https://www.youtube.com/playlist?list=PLJ8DOidoftZM\n\n"
         "#ChineseAnimationRecap #Japanese2DAnimeRecap #MotionDraftStudio #AnimationRecap #NovelRecap"
