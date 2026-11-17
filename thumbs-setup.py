@@ -5,8 +5,20 @@ import json, urllib.request
 from pathlib import Path
 import os, sys
 
-CF_ID = os.environ.get("CF_ACCOUNT_ID") or "REDACTED_CF_ACCOUNT_ID"
-CF_TOKEN = os.environ.get("CF_API_TOKEN") or "REDACTED_CF_TOKEN"
+def _load_dotenv(path=".env"):
+    try:
+        for line in Path(path).read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+    except FileNotFoundError:
+        pass
+_load_dotenv()
+
+CF_ID = os.environ.get("CF_ACCOUNT_ID", "").strip()
+CF_TOKEN = os.environ.get("CF_API_TOKEN", "").strip()
 
 if not CF_ID or not CF_TOKEN:
     print("missing CF creds"); sys.exit(1)

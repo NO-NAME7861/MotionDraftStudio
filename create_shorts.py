@@ -228,8 +228,21 @@ PROMPTS = [
     },
 ]
 
-CF_ID = os.environ.get("CF_ACCOUNT_ID", "REDACTED_CF_ACCOUNT_ID").strip()
-CF_TOKEN = os.environ.get("CF_API_TOKEN", "REDACTED_CF_TOKEN").strip()
+def _load_dotenv(path=".env"):
+    """Tiny .env loader — keeps secrets out of the codebase (gitignored)."""
+    try:
+        for line in Path(path).read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+    except FileNotFoundError:
+        pass
+_load_dotenv()
+
+CF_ID = os.environ.get("CF_ACCOUNT_ID", "").strip()
+CF_TOKEN = os.environ.get("CF_API_TOKEN", "").strip()
 W_, H_, FPS = 1024, 576, 25
 
 def cf_image(prompt, out, seed):
