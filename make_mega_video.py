@@ -24,12 +24,21 @@ EPISODE_ID = MEGA_VARIANT
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "").strip()
 OPENROUTER_MODEL   = os.environ.get("OPENROUTER_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free")
-# nemotron-ultra is the reliable free model right now - Gemma free models are persistently 429 at peak quota hours
+# note: all free OpenRouter models are quota-limited per day; spread attempts across many labs so one 429 doesn't stall the pipeline
 FALLBACK_MODELS    = [m for m in [
     "nvidia/nemotron-3-ultra-550b-a55b:free",
     "nvidia/nemotron-3.5-lightning:free",
+    "baidu/ernie-5.5-flash-preview:free",
+    "inclusionai/ling-3.2-flash:free",
+    "thinkingmachines/inkling-2-small:free",
+    "recursive/flint-v1.0:free",
+    "particle-ai/particle-1:free",
+    "dots-studio/dots-3-note-preview:free",
     "google/gemma-4-31b-it:free",
     "google/gemma-4-26b-a4b-it:free",
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+    "nvidia/nemotron-3.5-super-vl:free",
+    "cohere/north-mini-code:free",
 ]]
 CF_ID    = os.environ.get("CF_ACCOUNT_ID", "")
 CF_TOKEN = os.environ.get("CF_API_TOKEN", "")
