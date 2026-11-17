@@ -11,6 +11,21 @@ on:
         required: false
         default: ""
         type: string
+      skip_llm:
+        description: "Use pre-written salvage narration (no OpenRouter)"
+        required: false
+        default: false
+        type: boolean
+      salvage_file:
+        description: "Path to salvage narration (used when skip_llm=true)"
+        required: false
+        default: "explainer-salvage/solo_s001.txt"
+        type: string
+      title:
+        description: "Override YouTube title (<=100 chars)"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: write
@@ -63,6 +78,10 @@ jobs:
           OPENROUTER_MODEL: "nvidia/nemotron-3-ultra-550b-a55b:free"
           EPISODES_CSV: episodes_solo.csv
           EPISODE_ID: ${{ steps.next_ep.outputs.id }}
+          EXPLAINER_SERIES: "Solo Leveling"
+          EXPLAINER_TITLE: ${{ inputs.title }}
+          EXPLAINER_SKIP_LLM: ${{ inputs.skip_llm && '1' || '0' }}
+          EXPLAINER_SALVAGE_FILE: ${{ inputs.salvage_file }}
           EXPLAINER_PARTS: 6
           WORDS_PER_PART: 4500
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}

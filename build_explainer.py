@@ -19,6 +19,10 @@ OUT.mkdir(exist_ok=True)
 
 W, H, FPS = 1024, 576, 25
 N_IMAGES   = 32
+SERIES        = os.environ.get("EXPLAINER_SERIES", "RE:ZERO")
+SKIP_LLM      = os.environ.get("EXPLAINER_SKIP_LLM", "0") == "1"
+SALVAGE_FILE  = os.environ.get("EXPLAINER_SALVAGE_FILE", "").strip()
+CUSTOM_TITLE  = os.environ.get("EXPLAINER_TITLE", "").strip()
 TARGET_PARTS = int(os.environ.get("EXPLAINER_PARTS", "6"))
 APPROX_WORDS_PER_PART = int(os.environ.get("WORDS_PER_PART", "5000"))
 VOICE = os.environ.get("TTS_VOICE", "en-IN-NeerjaExpressiveNeural")
@@ -122,7 +126,7 @@ def make_synthetic_image(dest, idx):
 def call_part(part_idx: int, total_parts: int, row: dict) -> str:
     sys_prompt = (
         "You are a veteran YouTube scriptwriter in the style of Deniz / Shey Anime recaps, targeting Indian audiences. "
-        "You write RE:ZERO deep-arc explainers in Devanagari Hindi + English mix. Every sentence pulls the viewer forward. "
+        f"You write {SERIES} deep-arc explainers in Devanagari Hindi + English mix. Every sentence pulls the viewer forward. "
         "You never copyright-quote scenes verbatim; you explain, dramatize, and analyse. "
         "Write ONLY JSON line with key 'narration'. No markdown, no extra commentary."
     )
@@ -198,24 +202,29 @@ def mix_bgm(audio):
 
 
 def main():
-    if not OPENROUTER_API_KEY:
-        sys.exit("OPENROUTER_API_KEY not set")
-
     row = load_episode()
     total = TARGET_PARTS
-    parts = []
-    for i in range(1, total + 1):
-        parts.append(call_part(i, total, row))
-    narration = "\n\n".join(p.strip() for p in parts)
-    txt = WORK / "narration.txt"
-    txt.write_text(narration, encoding="utf-8")
-    log(f"TOTAL narration: {len(narration.split())} words (target ~{APPROX_WORDS_PER_PART*total})")
+    if SKIP_LLM and SALVAGE_FILE:
+        narration = Path(SALVAGE_FILE).read_text(encoding="utf-8")
+        txt = WORK / "narration.txt"
+        txt.write_text(narration, encoding="utf-8")
+        log(f"SALVAGE mode: {len(narration.split())} words from {SALVAGE_FILE}")
+    else:
+        if not OPENROUTER_API_KEY:
+            sys.exit("OPENROUTER_API_KEY not set")
+        parts = []
+        for i in range(1, total + 1):
+            parts.append(call_part(i, total, row))
+        narration = "\n\n".join(p.strip() for p in parts)
+        txt = WORK / "narration.txt"
+        txt.write_text(narration, encoding="utf-8")
+        log(f"TOTAL narration: {len(narration.split())} words (target ~{APPROX_WORDS_PER_PART*total})")
 
     seed0 = random.randint(1000, 999999)
     image_paths = []
     for i in range(N_IMAGES):
         dest = WORK / f"img_{i:02d}.png"
-        prompt = f"re:zero {row['topic']} scene {i+1}, cinematic, japanese 2D anime style, dark tone, no text"
+        prompt = f"{SERIES} {row['topic']} scene {i+1}, cinematic, japanese 2D anime style, dark tone, no text"
         if cf_image(prompt, dest, seed0 + i):
             image_paths.append(dest)
         elif make_synthetic_image(dest, i):
@@ -249,11 +258,11 @@ def main():
                     "-c", "copy", str(concat)],
                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    sub_style = ("FontName=Lohit Devanagari,FontSize=17,Bold=-1,"
-                 "PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=4,Outline=2,Shadow=0,MarginV=24")
+    # No subtitle burn-in — libass/fontconfig exits non-zero on hosted runners;
+    # captions can be uploaded via YouTube Studio later.
     out_mp4 = OUT / f"explainer_{EPISODE_ID}.mp4"
     subprocess.run(["ffmpeg", "-y", "-i", str(concat), "-i", str(mixed),
-                    "-vf", f"subtitles='{srt.as_posix()}':force_style='{sub_style}'",
+                    "-map", "0:v:0", "-map", "1:a:0",
                     "-c:v", "libx264", "-preset", "ultrafast", "-crf", "26",
                     "-c:a", "aac", "-b:a", "128k", "-shortest", str(out_mp4)],
                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -269,20 +278,26 @@ def main():
     yt = build("youtube", "v3", credentials=creds, cache_discovery=False)
     thumb = None
     thumb_dest = WORK / "thumb.png"
-    cf_image(f"re:zero thumb {row['topic']} 4-6 hours, blood red art, dramatic, no text",
+    cf_image(f"{SERIES} thumb {row['topic']}, dramatic, blood red art, no text",
              thumb_dest, seed0 + 999)
     if thumb_dest.exists():
         thumb = thumb_dest
-    title = f"RE:ZERO Explained - {row['arc']} | Complete Story Arc Hindi Recap by Motion-Draft Studio"
-    desc = (f"RE:ZERO explained in Hindi — full novel + anime arc: {row['arc']}\n\n"
-            "Four hours of deep recap: every character, every decision, every twist.\n\n"
+    if CUSTOM_TITLE:
+        title = CUSTOM_TITLE
+    else:
+        title = f"{SERIES} Explained - {row['arc']} | Complete Arc Hindi Recap by Motion-Draft Studio"
+    title = title[:100]
+    desc = (f"{SERIES} explained in Hindi — Arc: {row['arc']}\n\n"
+            "Deep recap: every character, every decision, every twist.\n\n"
             "⚠️ This video features AI-generated visuals and AI narration.\n\n"
-            "Subscribe for weekly RE:ZERO explainers: https://www.youtube.com/@MotionDraftStudio\n\n"
-            "#ReZeroExplained #MotionDraftStudio #HindiAnimeRecap")
+            "Subscribe for weekly anime + novel explainers: https://www.youtube.com/@MotionDraftStudio\n\n"
+            f"#{SERIES.replace(' ', '').replace(':', '')} #MotionDraftStudio #HindiAnimeRecap")
+    tags = list(dict.fromkeys([SERIES.lower(), SERIES.lower() + " explained",
+                               SERIES.lower() + " hindi", "anime recap hindi",
+                               "motion draft studio", "explained", "long recap",
+                               "sung jinwoo"]))
     body = {
-        "snippet": {"title": title[:100], "description": desc, "tags":
-                    ["re:zero", "rezero explained", "re:zero hindi", "rezero arc 1", "anime recap hindi",
-                     "motion draft studio", "re:zero novel", "explained", "long recap"],
+        "snippet": {"title": title, "description": desc, "tags": tags,
                     "categoryId": "24", "defaultLanguage": "hi"},
         "status": {"privacyStatus": "public", "selfDeclaredMadeForKids": False},
     }
