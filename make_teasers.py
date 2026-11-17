@@ -207,6 +207,87 @@ TEASERS = [
         ),
         "seed": 8210,
     },
+    {
+        "id": "T11",
+        "hook_prompts": [
+            "chinese animation, xianxia key visual, an emperor alone at midnight signing decrees by candlelight, cel art, no text",
+            "chinese animation, a disciple collapsing over a wine cup at a court dinner, cel art, no text",
+            "chinese animation, a trusted physician kneeling with herb satchels at the palace steps, cel art, no text",
+            "chinese animation, close-up of a hand slipping a folded paper into a sleeve during a toast, cel art, no text",
+            "chinese animation, a secret underground archive of fire-clay tablets beneath the palace stairs, cel art, no text",
+            "chinese animation, a young prince standing in the throne room with his inked palm, storm light through the windows, no text",
+        ],
+        "narration": (
+            "उस सम्राट ने दो बार अपने ही बेटे को ज़हर दिया। "
+            "तीसरी बार, ज़हर उसी के प्याले में आ गया। "
+            "और उस कमरे में एक ही सांप छिपा था — जिसका नाम किसी ने नहीं सुना।"
+        ),
+        "seed": 8211,
+    },
+    {
+        "id": "T12",
+        "hook_prompts": [
+            "chinese animation, xianxia key visual, a nine year old child standing alone on a hill above burning village ruins at night, cel art, no text",
+            "chinese animation, a child carrying his father's broken sword through a frozen mountain pass, cel art, no text",
+            "chinese animation, a mountain sect elder laughing at a small disciple kneeling before the gate, cel art, no text",
+            "chinese animation, the child in ten winters with cold empty eyes holding a jade contract seal, cel art, no text",
+            "chinese animation, a great sect hall where every elder in turn chokes on his tea at midnight, cel art, no text",
+            "chinese animation, the nine year old from the hill now a nineteen year old standing before the sect he swore to burn, cel art, no text",
+        ],
+        "narration": (
+            "नौ साल की उम्र में उसने पूरे वंश को जलते देखा। किसी ने उसकी मदद नहीं की। "
+            "अब वो उन्नीस साल का है, और उसके घुटनों में वो आग अब भी बंद नहीं हुई।"
+        ),
+        "seed": 8212,
+    },
+    {
+        "id": "T13",
+        "hook_prompts": [
+            "chinese animation, xianxia key visual, two brothers embracing at a rainy station gate, one holding a wooden mask, cel art, no text",
+            "chinese animation, an underground face-changing auction with jade masks glowing on velvet, cel art, no text",
+            "chinese animation, a brother walking away into fog with someone else's smile, cel art, no text",
+            "chinese animation, a sister at a window waiting for her brother's letters, cel art, no text",
+            "chinese animation, a masked man walking through a city festival unrecognized by those who betrayed him, cel art, no text",
+            "chinese animation, two brothers meeting again after a year, one still wearing the mask, rain, cel art, no text",
+        ],
+        "narration": (
+            "बहन की आँखें बचाने के लिए उसने अपना चेहरा बेच दिया। "
+            "एक साल बाद कोई उसे पहचान नहीं पाया। पर सपनों में वो अभी भी वही पुरानी हँसी सुनता है।"
+        ),
+        "seed": 8213,
+    },
+    {
+        "id": "T14",
+        "hook_prompts": [
+            "chinese animation, xianxia key visual, a young empress-in-exile standing on a palace balcony in white mourning robes, cel art, no text",
+            "chinese animation, a grand hall where a hundred courtiers bow before a silent young woman on the throne, cel art, no text",
+            "chinese animation, close-up of a seal of office pressed in golden wax, the hand trembling, cel art, no text",
+            "chinese animation, the old emperor's burned library with one scroll unburnt on the floor, cel art, no text",
+            "chinese animation, a young woman walking through her father's burning palace without blinking, cel art, no text",
+            "chinese animation, the throne room at dawn, the new empress alone meeting her father's old guard, cel art, no text",
+        ],
+        "narration": (
+            "जिस महाराज ने पूरे राज्य को जलाया, उसकी इकलौती बेटी ने आग में से जी निकाला। "
+            "अब वही बेटी उसके सिंहासन पर बैठी है — और पिछले सारे नाम भूल चुकी है।"
+        ),
+        "seed": 8214,
+    },
+    {
+        "id": "T15",
+        "hook_prompts": [
+            "chinese animation, xianxia key visual, an elder on a mountain giving a dying child seven grains of rice and a red cord, cel art, no text",
+            "chinese animation, a child holding a small candle in a dark cave counting seven, cel art, no text",
+            "chinese animation, the first night, a door marked with white ash, cel art, no text",
+            "chinese animation, the fourth night, another door and another unanswered knock, rain, cel art, no text",
+            "chinese animation, seven graves in a row with one candle still burning at the eighth, cel art, no text",
+            "chinese animation, the child now grown walking between the graves with the red cord around his wrist, cel art, no text",
+        ],
+        "narration": (
+            "सात रातों का वचन था — हर रात एक दरवाज़ा, हर दरवाज़े के पीछे एक सच। "
+            "आठवें दिन सब मरे, एक को छोड़कर। और वही एक अब वही वचन दोहराता है।"
+        ),
+        "seed": 8215,
+    },
 ]
 
 

@@ -121,6 +121,56 @@ META = [
             "#Shorts #MotionDraftShorts #ChineseAnimationRecapHindi #MotionDraftStudio"
         ),
     },
+    {
+        "file": "T11.mp4",
+        "title": "दो बार अपने ही बेटे को ज़हर दिया — तीसरी बार कौन पिला गया #Shorts",
+        "description": (
+            "दो बार जहर दिया, तीसरी बार उसने ख़ुद पिया — कमरे में एक सांप छिपा था\n\n"
+            "पूरी कहानी → {mega_link}\n\n"
+            "⚠️ AI-generated visuals and AI narration.\n\n"
+            "#Shorts #MotionDraftShorts #ChineseAnimationRecapHindi #MotionDraftStudio"
+        ),
+    },
+    {
+        "file": "T12.mp4",
+        "title": "नौ साल की उम्र में सब कुछ जल गया — अब वह उन्नीस साल का है #Shorts",
+        "description": (
+            "जिसने पूरा वंश जलते देखा, आज वही आग उसका सबसे बड़ा हथियार है\n\n"
+            "पूरी कहानी → {mega_link}\n\n"
+            "⚠️ AI-generated visuals and AI narration.\n\n"
+            "#Shorts #MotionDraftShorts #ChineseAnimationRecapHindi #MotionDraftStudio"
+        ),
+    },
+    {
+        "file": "T13.mp4",
+        "title": "बहन को बचाने के लिए अपना चेहरा बेच दिया — फिर कोई नहीं पहचाना #Shorts",
+        "description": (
+            "जिसने अपना चेहरा बेच दिया, उसे पहचानने वाला कोई नहीं बचा\n\n"
+            "पूरी कहानी → {mega_link}\n\n"
+            "⚠️ AI-generated visuals and AI narration.\n\n"
+            "#Shorts #MotionDraftShorts #ChineseAnimationRecapHindi #MotionDraftStudio"
+        ),
+    },
+    {
+        "file": "T14.mp4",
+        "title": "जिस महाराज ने सबको जलाया — उसी की बेटी ने पाया उसका सिंहासन #Shorts",
+        "description": (
+            "जलाने वाले पिता की इकलौती बेटी — अब उसके सिंहासन पर बैठी है\n\n"
+            "पूरी कहानी → {mega_link}\n\n"
+            "⚠️ AI-generated visuals and AI narration.\n\n"
+            "#Shorts #MotionDraftShorts #ChineseAnimationRecapHindi #MotionDraftStudio"
+        ),
+    },
+    {
+        "file": "T15.mp4",
+        "title": "सात रातों का वचन — आठवें दिन सब मरे, एक को छोड़कर #Shorts",
+        "description": (
+            "सात रातें, सात दरवाजे, एक वचन — आठवें दिन क्या हुआ\n\n"
+            "पूरी कहानी → {mega_link}\n\n"
+            "⚠️ AI-generated visuals and AI narration.\n\n"
+            "#Shorts #MotionDraftShorts #ChineseAnimationRecapHindi #MotionDraftStudio"
+        ),
+    },
 ]
 
 
