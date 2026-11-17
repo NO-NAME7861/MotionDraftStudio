@@ -1,8 +1,8 @@
 """
 build_explainer.py - Anime novel EXPLAINER episodes.
 
-Targets long-form 4-6 HOUR episodes for the new Re:Zero series.
-Each episode = 6 parts, each part ~5,000 words (Devanagari Hindi + English mix),
+Targets ~2-hour episodes for the Re:Zero / Solo Leveling series.
+Each episode = 4 parts, each part ~4,500 words (Devanagari Hindi + English mix),
 all concatenated into one full-length explainer video.
 
 Run: EPISODE_ID=R001 python build_explainer.py
@@ -139,7 +139,8 @@ def call_part(part_idx: int, total_parts: int, row: dict) -> str:
         "You never copyright-quote scenes verbatim; you explain, dramatize, and analyse. "
         "Write ONLY JSON line with key 'narration'. No markdown, no extra commentary."
     )
-    user_prompt = f"""Write PART {part_idx} of {total_parts} of a roughly {APPROX_WORDS_PER_PART * total_parts // 1000}-hour long explanation of "{row['topic']}".
+    approx_hours = round(APPROX_WORDS_PER_PART * total_parts * 0.427 / 3600, 1)
+    user_prompt = f"""Write PART {part_idx} of {total_parts} of a roughly {approx_hours}-hour long explanation of "{row['topic']}".
 
 Structure of remaining video:
   Part 1: Hook — the curling facts about the arc. Skip nothing. Add suspense AND stakes.

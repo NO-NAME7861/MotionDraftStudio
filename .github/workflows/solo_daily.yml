@@ -82,7 +82,7 @@ jobs:
           EXPLAINER_TITLE: ${{ inputs.title }}
           EXPLAINER_SKIP_LLM: ${{ inputs.skip_llm && '1' || '0' }}
           EXPLAINER_SALVAGE_FILE: ${{ inputs.salvage_file }}
-          EXPLAINER_PARTS: 6
+          EXPLAINER_PARTS: 4
           WORDS_PER_PART: 4500
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}

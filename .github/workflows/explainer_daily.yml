@@ -64,7 +64,7 @@ jobs:
           OPENROUTER_MODEL: "nvidia/nemotron-3-ultra-550b-a55b:free"
           EPISODES_CSV: episodes_rezero.csv
           EPISODE_ID: ${{ steps.next_ep.outputs.id }}
-          EXPLAINER_PARTS: 6
+          EXPLAINER_PARTS: 4
           WORDS_PER_PART: 4500
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
