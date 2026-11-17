@@ -62,12 +62,7 @@ jobs:
           if [ -n "${{ inputs.episode_id }}" ]; then
             echo "id=${{ inputs.episode_id }}" >> $GITHUB_OUTPUT
           else
-            python -c "
-            import json, pathlib
-            p = pathlib.Path('state/episodes_solo.json')
-            s = json.loads(p.read_text()) if p.exists() else {'next_id': 'S001', 'done': []}
-            print(s['next_id'])
-            " > next_id.txt
+            python next_id.py state/episodes_solo.json S001 > next_id.txt
             echo "id=$(cat next_id.txt)" >> $GITHUB_OUTPUT
           fi
 
