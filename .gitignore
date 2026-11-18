@@ -13,3 +13,13 @@ gift-out/
 teasers-work/
 teasers-build.log
 thumbs-out/
+token_drive.json
+token_mega.json
+token_rezero.json
+*.key
+*.pem
+credentials*.json
+service-account*.json
+.env.*
+.env.local
+*secret*
