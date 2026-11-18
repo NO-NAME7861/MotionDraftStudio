@@ -54,10 +54,12 @@ def script_lang(text):
 
 
 def gtts_fallback(args):
+    import os
     from gtts import gTTS
+    slow = os.environ.get("GTTS_SLOW", "0") == "1"
     text = pathlib.Path(args.file).read_text(encoding="utf-8")
     lang = script_lang(text)
-    print(f"gTTS fallback: lang={lang} (auto-detected script)", flush=True)
+    print(f"gTTS fallback: lang={lang} (auto-detected script) slow={slow}", flush=True)
     mp3_path = args.write_media
     words = text.split()
     chunks = []
@@ -75,7 +77,7 @@ def gtts_fallback(args):
         print(f"gtts chunk {i+1}/{len(chunks)} ({len(chunk)} chars)", flush=True)
         for attempt in range(3):
             try:
-                tts = gTTS(text=chunk, lang=lang, slow=False)
+                tts = gTTS(text=chunk, lang=lang, slow=slow)
                 from io import BytesIO
                 buf = BytesIO(); tts.write_to_fp(buf); out += buf.getvalue(); break
             except Exception as e:

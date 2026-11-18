@@ -18,7 +18,7 @@ OUT  = ROOT / "explainer-out"
 OUT.mkdir(exist_ok=True)
 
 W, H, FPS = 1024, 576, 25
-N_IMAGES   = 32
+N_IMAGES   = int(os.environ.get("N_IMAGES", "32"))
 SERIES        = os.environ.get("EXPLAINER_SERIES", "RE:ZERO")
 SKIP_LLM      = os.environ.get("EXPLAINER_SKIP_LLM", "0") == "1"
 SALVAGE_FILE  = os.environ.get("EXPLAINER_SALVAGE_FILE", "").strip()
@@ -124,7 +124,11 @@ def cf_image(prompt, dest, seed):
 
 def make_synthetic_image(dest, idx):
     palettes = [("0x1a0f2e", "0x4a2c5a", "0xc94f32"), ("0x0f1d3d", "0x274060", "0x4a8f8f"),
-                ("0x241424", "0x45224a", "0xe0a526"), ("0x081c2b", "0x1c3d4a", "0x3fa7a0")]
+                ("0x241424", "0x45224a", "0xe0a526"), ("0x081c2b", "0x1c3d4a", "0x3fa7a0"),
+                ("0x2e1a1a", "0x5a2c2c", "0xe85d3d"), ("0x141428", "0x2b2b52", "0x8f7ae8"),
+                ("0x1d2e14", "0x3a5227", "0x9fd356"), ("0x2e240f", "0x52431f", "0xffd166"),
+                ("0x0d2626", "0x1f4a4a", "0x2ee6d0"), ("0x301010", "0x5c1a1a", "0xff2222"),
+                ("0x1a1a1a", "0x333333", "0xaaaaaa"), ("0x101026", "0x1e1e4d", "0x5f8bff")]
     c0, c1, c2 = palettes[idx % len(palettes)]
     vf = f"gradients=s={W}x{H}:nb_colors=3:c0={c0}:c1={c1}:c2={c2}:speed=0.0,noise=alls=8:allf=t,vignette=PI/4.8"
     r = subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", vf,
@@ -288,10 +292,15 @@ def main():
     yt = build("youtube", "v3", credentials=creds, cache_discovery=False)
     thumb = None
     thumb_dest = WORK / "thumb.png"
-    cf_image(f"{SERIES} thumb {row['topic']}, dramatic, blood red art, no text",
-             thumb_dest, seed0 + 999)
-    if thumb_dest.exists():
-        thumb = thumb_dest
+    custom_thumb = os.environ.get("THUMB_FILE", "").strip()
+    if custom_thumb and Path(custom_thumb).exists():
+        thumb = Path(custom_thumb)
+        log("using custom thumbnail:", custom_thumb)
+    else:
+        cf_image(f"{SERIES} thumb {row['topic']}, dramatic, blood red art, no text",
+                 thumb_dest, seed0 + 999)
+        if thumb_dest.exists():
+            thumb = thumb_dest
     if CUSTOM_TITLE:
         title = CUSTOM_TITLE
     else:
