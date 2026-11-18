@@ -171,6 +171,26 @@ META = [
             "#Shorts #MotionDraftShorts #ChineseAnimationRecapHindi #MotionDraftStudio"
         ),
     },
+    {
+        "file": "T16.mp4",
+        "title": "भाई ने आख़िरी रात में कहा — माफ़ कर देना — फिर मर गया... पर वह बदला बनकर लौट आया #Shorts",
+        "description": (
+            "मरने के बाद भी खून का कर्ज़ अदा करना था — भाई की रूह बदला लेने वापस आई\n\n"
+            "पूरी कहानी → {mega_link}\n\n"
+            "⚠️ AI-generated visuals and AI narration.\n\n"
+            "#Shorts #MotionDraftShorts #ChineseAnimationRecapHindi #MotionDraftStudio"
+        ),
+    },
+    {
+        "file": "T17.mp4",
+        "title": "जब पूरा clan जला, तब एक बहन ने अपना चेहरा जला दिया — ताकि कोई पहचान न सके #Shorts",
+        "description": (
+            "चेहरा जलाकर बहन ने अपनी पहचान मिटाई — ताकि बदला बिना पहचाने लिया जाए\n\n"
+            "पूरी कहानी → {mega_link}\n\n"
+            "⚠️ AI-generated visuals and AI narration.\n\n"
+            "#Shorts #MotionDraftShorts #ChineseAnimationRecapHindi #MotionDraftStudio"
+        ),
+    },
 ]
 
 

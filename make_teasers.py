@@ -288,6 +288,40 @@ TEASERS = [
         ),
         "seed": 8215,
     },
+    {
+        "id": "T16",
+        "hook_prompts": [
+            "chinese animation, xianxia key visual, a brother on his deathbed in a cold dim room, final whisper to younger sibling, no text",
+            "chinese animation, a dying man gripping his brother's wrist, blood-warm crystal in his palm, no text",
+            "chinese animation, a funeral pyre at dawn with a man's silhouette walking away untouched by flames, no text",
+            "chinese animation, a man opening his eyes in a dark tomb beneath burning incense ash, no text",
+            "chinese animation, a younger brother alone in an empty clan hall surrounded by traitors, no text",
+            "chinese animation, the reborn brother standing in the great hall, every traitor silent, blood-red moon behind him, no text",
+        ],
+        "narration": (
+            "आख़िरी रात उसने अपने भाई से कहा — मुझे माफ़ कर देना। "
+            "पर मरने के बाद उसकी रूह वापस आई। और अब हर एक से, एक-एक जवाब चाहिए। "
+            "जो तुम सोच रहे हो, वह अब पूरी तरह बदला बन चुका है।"
+        ),
+        "seed": 8216,
+    },
+    {
+        "id": "T17",
+        "hook_prompts": [
+            "chinese animation, xianxia key visual, a young sister cutting her own face with a silver blade at dawn, tears and resolve, cel art, no text",
+            "chinese animation, a masked woman walking through a lantern festival unaware of her, no text",
+            "chinese animation, a brother hanging from a broken roofbeam, gazing at the moon, no text",
+            "chinese animation, a woman in a tea house serving tea to the man who destroyed her family, no text",
+            "chinese animation, the woman pouring poison into the tea, elegant calm, no text",
+            "chinese animation, the woman unmasking him with her true face, silver blade in hand, no text",
+        ],
+        "narration": (
+            "जब पूरा clan जला, तब एक बहन ने अपना चेहरा जला दिया — ताकि कोई पहचान न सके। "
+            "वह अब एक साधारण औरत की तरह तेहराज में काम करती है। "
+            "और उसका एक-एक घूंट — एक-एक बदला है।"
+        ),
+        "seed": 8217,
+    },
 ]
 
 
