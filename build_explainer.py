@@ -236,9 +236,13 @@ def main():
 
     seed0 = random.randint(1000, 999999)
     image_paths = []
+    _sl = SERIES.lower()
+    art_style = ("chinese animation, xianxia fantasy, cinematic cel art, ancient throne room, dark dramatic tone"
+                 if any(k in _sl for k in ("betrayal", "chinese", "xianxia"))
+                 else "japanese 2D anime style, dark dramatic tone, cinematic")
     for i in range(N_IMAGES):
         dest = WORK / f"img_{i:02d}.png"
-        prompt = f"{SERIES} {row['topic']} scene {i+1}, cinematic, japanese 2D anime style, dark tone, no text"
+        prompt = f"{SERIES}: {row['topic'][:120]} scene {i+1}, {art_style}, no text"
         if cf_image(prompt, dest, seed0 + i):
             image_paths.append(dest)
         elif make_synthetic_image(dest, i):
@@ -272,14 +276,49 @@ def main():
                     "-c", "copy", str(concat)],
                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    # No subtitle burn-in — libass/fontconfig exits non-zero on hosted runners;
-    # captions can be uploaded via YouTube Studio later.
+    # No subtitle burn-in; captions can be added in Studio later.
+    # Motion graphics: light-streak sweep, drifting sigil ring, rising chevrons,
+    # letterbox bars, film grain — same style as the viral T-series teasers.
     out_mp4 = OUT / f"explainer_{EPISODE_ID}.mp4"
-    subprocess.run(["ffmpeg", "-y", "-i", str(concat), "-i", str(mixed),
-                    "-map", "0:v:0", "-map", "1:a:0",
-                    "-c:v", "libx264", "-preset", "ultrafast", "-crf", "26",
-                    "-c:a", "aac", "-b:a", "128k", "-shortest", str(out_mp4)],
-                   check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        from make_teasers import make_streak, make_ring, make_chevrons
+        mg = WORK / "mg_assets"; mg.mkdir(exist_ok=True)
+        streak = mg / "streak.png"; ring = mg / "ring.png"; chev = mg / "chevrons.png"
+        if not streak.exists():
+            make_streak(streak)
+        if not ring.exists():
+            make_ring(ring)
+        if not chev.exists():
+            make_chevrons(chev)
+        fc = (f"[0:v]drawbox=x=0:y=0:w={W}:h=44:color=black:t=fill,"
+              f"drawbox=x=0:y={H-40}:w={W}:h=40:color=black:t=fill[lb];"
+              f"[1:v]scale=760:-1[streak];"
+              f"[lb][streak]overlay=x='mod(t*150,1240)-230':y='88+32*sin(t*0.8)':format=auto[s1];"
+              f"[2:v]scale=170:170[ring];"
+              f"[s1][ring]overlay=x='{W//2-85}+58*sin(t*1.15)':y='288-85+46*cos(t*0.95)':format=auto[s2];"
+              f"[3:v]split=2[ch1][ch2];[ch1]scale=140:140[chevA];[ch2]scale=140:140[chevB];"
+              f"[s2][chevA]overlay=x='34+26*sin(t*0.75)':y='{H}-mod(t*150,{H+260})':format=auto[s3];"
+              f"[s3][chevB]overlay=x='{W-174}-26*sin(t*0.75)':y='{H}-mod(t*150+260,{H+260})':format=auto[s4];"
+              f"[s4]noise=alls=4:allf=t,vignette=PI/4.6,format=yuv420p[vout];"
+              f"[4:a]loudnorm[aout]")
+        subprocess.run(["ffmpeg", "-y", "-i", str(concat),
+                        "-stream_loop", "-1", "-i", str(streak),
+                        "-stream_loop", "-1", "-i", str(ring),
+                        "-stream_loop", "-1", "-i", str(chev),
+                        "-i", str(mixed),
+                        "-filter_complex", fc,
+                        "-map", "[vout]", "-map", "[aout]",
+                        "-c:v", "libx264", "-preset", "ultrafast", "-crf", "26", "-pix_fmt", "yuv420p",
+                        "-c:a", "aac", "-b:a", "128k", "-ar", "48000", "-shortest", str(out_mp4)],
+                       check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        log("MG rendered:", out_mp4)
+    except Exception as e:
+        log("MG failed, falling back to plain concat:", str(e)[:120])
+        subprocess.run(["ffmpeg", "-y", "-i", str(concat), "-i", str(mixed),
+                        "-map", "0:v:0", "-map", "1:a:0",
+                        "-c:v", "libx264", "-preset", "ultrafast", "-crf", "26",
+                        "-c:a", "aac", "-b:a", "128k", "-shortest", str(out_mp4)],
+                       check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     log("video ready:", out_mp4)
 
     # Upload
