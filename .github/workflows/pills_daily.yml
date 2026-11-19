@@ -1,0 +1,117 @@
+name: Pills Explainer Series (Daily)
+
+on:
+  schedule:
+    - cron: "0 11 * * *"
+  workflow_dispatch:
+    inputs:
+      episode_id:
+        description: "Episode ID (P001-P006)"
+        required: false
+        default: ""
+        type: string
+      skip_llm:
+        description: "Use pre-written salvage narration"
+        required: false
+        default: false
+        type: boolean
+      salvage_file:
+        description: "Salvage narration path (used when skip_llm=true)"
+        required: false
+        default: "explainer-salvage/pills_p001.txt"
+        type: string
+      title:
+        description: "Override YouTube title"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  pills-explainer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 600
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-liberation fonts-indic fontconfig
+          sudo fc-cache -f
+
+      - name: Install Python deps
+        run: pip install -r requirements.txt
+
+      - name: Decode YouTube token
+        run: |
+          echo "${{ secrets.YOUTUBE_TOKEN_JSON }}" | base64 -d > token.json
+          test -s token.json && echo "token.json OK"
+
+      - name: Determine next episode
+        id: next_ep
+        run: |
+          if [ -n "${{ inputs.episode_id }}" ]; then
+            echo "id=${{ inputs.episode_id }}" >> $GITHUB_OUTPUT
+          else
+            python next_id.py state/episodes_pills.json P001 > next_id.txt
+            echo "id=$(cat next_id.txt)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build and upload Pills explainer
+        env:
+          TTS_VOICE: "en-IN-NeerjaExpressiveNeural"
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: "nvidia/nemotron-3-ultra-550b-a55b:free"
+          EPISODES_CSV: episodes_pills.csv
+          EPISODE_ID: ${{ steps.next_ep.outputs.id }}
+          EXPLAINER_SERIES: "The 100 Pills System"
+          EXPLAINER_TITLE: ${{ inputs.title }}
+          EXPLAINER_SKIP_LLM: ${{ inputs.skip_llm && '1' || '0' }}
+          EXPLAINER_SALVAGE_FILE: ${{ inputs.salvage_file }}
+          EXPLAINER_PARTS: 4
+          WORDS_PER_PART: 5000
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: python build_explainer.py
+
+      - name: Save Pills state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          mkdir -p state
+          python -c "
+          import json, os
+          ep = '${{ steps.next_ep.outputs.id }}'
+          p = 'state/episodes_pills.json'
+          s = json.loads(open(p, encoding='utf-8').read()) if os.path.exists(p) else {'next_id': 'P001', 'done': []}
+          if ep not in s['done']:
+              s['done'].append(ep)
+          ids = ['P001','P002','P003','P004','P005','P006']
+          try:
+              s['next_id'] = ids[ids.index(ep) + 1]
+          except IndexError:
+              s['next_id'] = 'P006'
+          open(p, 'w', encoding='utf-8').write(json.dumps(s, indent=2))
+          print('state ->', s)
+          "
+          git add state/episodes_pills.json
+          git diff --cached --quiet || (git commit -m "chore: advance pills state" && git pull --rebase origin main && git push origin HEAD:main)
+
+      - name: Upload work artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pills-explainer-work
+          path: |
+            explainer-work/*.json
+            explainer-work/*.txt
+            explainer-work/*.srt
+          retention-days: 14
