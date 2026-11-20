@@ -97,7 +97,7 @@ jobs:
           ids = ['G001','G002','G003','G004','G005','G006']
           try:
               s['next_id'] = ids[ids.index(ep) + 1]
-          except IndexError:
+          except (ValueError, IndexError):
               s['next_id'] = 'G006'
           open(p, 'w', encoding='utf-8').write(json.dumps(s, indent=2))
           print('state ->', s)
