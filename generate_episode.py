@@ -32,7 +32,6 @@ FALLBACK_MODELS    = [m for m in [
     "nvidia/nemotron-3.5-lightning:free",
     "baidu/ernie-5.5-flash-preview:free",
     "inclusionai/ling-3.2-flash:free",
-    "thinkingmachines/inkling-2-small:free",
     "recursive/flint-v1.0:free",
     "particle-ai/particle-1:free",
     "dots-studio/dots-3-note-preview:free",
@@ -40,7 +39,6 @@ FALLBACK_MODELS    = [m for m in [
     "google/gemma-4-26b-a4b-it:free",
     "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
     "nvidia/nemotron-3.5-super-vl:free",
-    "cohere/north-mini-code:free",
 ] ]
 VOICE              = os.environ.get("TTS_VOICE", "en-IN-NeerjaExpressiveNeural")
 TTS_RATE           = os.environ.get("TTS_RATE", "-12%")  # slower, contemplative dramatic pace
