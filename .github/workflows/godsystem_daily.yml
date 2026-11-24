@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       episode_id:
-        description: "Episode ID (G001-G006)"
+        description: "Episode ID (G001-G014)"
         required: false
         default: ""
         type: string
@@ -24,6 +24,11 @@ on:
         description: "Override YouTube title"
         required: false
         default: ""
+        type: string
+      privacy:
+        description: "YouTube privacy status (public|private|unlisted)"
+        required: false
+        default: "public"
         type: string
 
 permissions:
@@ -76,32 +81,22 @@ jobs:
           EXPLAINER_TITLE: ${{ inputs.title }}
           EXPLAINER_SKIP_LLM: ${{ inputs.skip_llm && '1' || '0' }}
           EXPLAINER_SALVAGE_FILE: ${{ inputs.salvage_file }}
-          EXPLAINER_PARTS: 6
+          EXPLAINER_PRIVACY: ${{ inputs.privacy && inputs.privacy || 'public' }}
           WORDS_PER_PART: 3000
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
         run: python build_explainer.py
 
       - name: Save God-system state
+        if: success()
+        env:
+          EPISODE_ID: ${{ steps.next_ep.outputs.id }}
+          EPISODES_CSV: episodes_godsystem.csv
+          STATE_FILE: state/episodes_godsystem.json
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          mkdir -p state
-          python -c "
-          import json, os
-          ep = '${{ steps.next_ep.outputs.id }}'
-          p = 'state/episodes_godsystem.json'
-          s = json.loads(open(p, encoding='utf-8').read()) if os.path.exists(p) else {'next_id': 'G001', 'done': []}
-          if ep not in s['done']:
-              s['done'].append(ep)
-          ids = ['G001','G002','G003','G004','G005','G006']
-          try:
-              s['next_id'] = ids[ids.index(ep) + 1]
-          except (ValueError, IndexError):
-              s['next_id'] = 'G006'
-          open(p, 'w', encoding='utf-8').write(json.dumps(s, indent=2))
-          print('state ->', s)
-          "
+          python advance_state.py
           git add state/episodes_godsystem.json
           git diff --cached --quiet || (git commit -m "chore: advance god-system state" && git pull --rebase origin main && git push origin HEAD:main)
 
