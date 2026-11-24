@@ -17,7 +17,7 @@ WORK.mkdir(exist_ok=True)
 OUT  = ROOT / "explainer-out"
 OUT.mkdir(exist_ok=True)
 
-W, H, FPS = 1024, 576, 25
+W, H, FPS = 1280, 720, 25
 N_IMAGES   = int(os.environ.get("N_IMAGES", "32"))
 SERIES        = os.environ.get("EXPLAINER_SERIES", "RE:ZERO")
 SKIP_LLM      = os.environ.get("EXPLAINER_SKIP_LLM", "0") == "1"
