@@ -2,9 +2,9 @@ name: Daily Episode Upload
 
 on:
   schedule:
-    # 6 episodes per day, spread every 4 hours (UTC) = 00:00/04:00/08:00/12:00/16:00/20:00 UTC
-    # (PKT: 5 AM / 9 AM / 1 PM / 5 PM / 9 PM / 1 AM)
-    - cron: "0 0,4,8,12,16,20 * * *"
+    # 5 long videos per day (uploaded daily) - minimum 3 hours target each
+    # (PKT: 5 AM / 9 AM / 1 PM / 5 PM / 9 PM)
+    - cron: "0 0,4,8,12,16 * * *"
   workflow_dispatch:
     inputs:
       privacy:

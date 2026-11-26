@@ -26,7 +26,7 @@ CUSTOM_TITLE  = os.environ.get("EXPLAINER_TITLE", "").strip()
 TARGET_PARTS = int(os.environ.get("EXPLAINER_PARTS", "6"))
 APPROX_WORDS_PER_PART = int(os.environ.get("WORDS_PER_PART", "5000"))
 VOICE = os.environ.get("TTS_VOICE", "en-IN-NeerjaExpressiveNeural")
-RATE  = os.environ.get("TTS_RATE", "150%")  # 250 WPM narration speed
+RATE  = os.environ.get("TTS_RATE", "+22%")  # valid edge-tts rate format (+22% English / +0% Romanized Hindi-Urdu); was '150%' -> INVALID -> gTTS fallback -> robot voice
 EPISODE_ID = os.environ.get("EPISODE_ID", "R001")
 EPISODES_CSV = os.environ.get("EPISODES_CSV", "episodes_rezero.csv")
 

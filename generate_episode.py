@@ -41,7 +41,7 @@ FALLBACK_MODELS    = [m for m in [
     "nvidia/nemotron-3.5-super-vl:free",
 ] ]
 VOICE              = os.environ.get("TTS_VOICE", "en-IN-NeerjaExpressiveNeural")
-TTS_RATE           = os.environ.get("TTS_RATE", "150%")  # 250 WPM narration speed
+TTS_RATE           = os.environ.get("TTS_RATE", "+0%")  # valid edge-tts rate format (+22% English / +0% Romanized Hindi-Urdu); was '150%' -> INVALID -> gTTS fallback -> robot voice
 PRIVACY_STATUS     = os.environ.get("PRIVACY_STATUS", "private")  # safe default; set public when confident
 UPLOAD             = os.environ.get("UPLOAD", "1") == "1"
 DRY_RUN            = os.environ.get("DRY_RUN", "0") == "1"
