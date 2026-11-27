@@ -46,6 +46,8 @@ PRIVACY_STATUS     = os.environ.get("PRIVACY_STATUS", "private")  # safe default
 UPLOAD             = os.environ.get("UPLOAD", "1") == "1"
 DRY_RUN            = os.environ.get("DRY_RUN", "0") == "1"
 EPISODE_OVERRIDE   = os.environ.get("EPISODE_INDEX", "").strip()  # force a specific episode id
+EPISODE_TOPIC      = os.environ.get("EPISODE_TOPIC", "").strip()   # TREND-BASED: one-off trending topic override (no csv edit)
+EPISODE_MORAL      = os.environ.get("EPISODE_MORAL", "").strip()   # moral for EPISODE_TOPIC override
 
 W, H, FPS = 1024, 576, 25
 N_IMAGES = 20  # CF FLUX schnell; spaced ~5s apart to stay inside free-tier burst rate
@@ -57,13 +59,21 @@ def log(*a):
     print(f"[{datetime.now():%H:%M:%S}]", *a, flush=True)
 
 def load_episode():
-    rows = list(csv.DictReader(open(EPISODES_CSV, encoding="utf-8")))
-    assert rows, "episodes.csv empty"
     if EPISODE_OVERRIDE:
+        rows = list(csv.DictReader(open(EPISODES_CSV, encoding="utf-8")))
         row = next((r for r in rows if r["id"] == EPISODE_OVERRIDE), None)
         if not row:
             sys.exit(f"EPISODE_INDEX {EPISODE_OVERRIDE} not found in episodes.csv")
         return row
+    if EPISODE_TOPIC:
+        # TREND-BASED / one-off topic mode (used by self-dev workflow trend picker)
+        return {
+            "id": EPISODE_OVERRIDE or "special",
+            "topic": EPISODE_TOPIC,
+            "moral": EPISODE_MORAL or "Wonder is the beginning of wisdom",
+        }
+    rows = list(csv.DictReader(open(EPISODES_CSV, encoding="utf-8")))
+    assert rows, "episodes.csv empty"
     state = json.loads(STATE_FILE.read_text()) if STATE_FILE.exists() else {"next_id": rows[0]["id"], "done": []}
     row = next((r for r in rows if r["id"] == state.get("next_id")), rows[0])
     return row
@@ -554,7 +564,8 @@ def main():
         drive_backup(out_mp4)
     except Exception as e:
         log("drive backup failed (non-fatal):", e)
-    mark_done(row["id"])
+    if row["id"] in {r["id"] for r in csv.DictReader(open(EPISODES_CSV, encoding="utf-8"))}:
+        mark_done(row["id"])
     log("done -> https://youtu.be/" + vid)
 
 if __name__ == "__main__":
